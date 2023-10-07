@@ -1,5 +1,34 @@
 import pygame
 import sys
+import tkinter as tk
+from tkinter import filedialog
+import pandas as pd
+import ast
+
+def pedir_laberinto():
+
+    # Crear una ventana principal
+    root = tk.Tk()
+    root.withdraw()  # Ocultar la ventana principal
+
+    # Abrir el cuadro de diálogo para seleccionar un archivo TXT
+    file_path = filedialog.askopenfilename(filetypes=[("Archivos TXT", "*.txt")])
+
+    if file_path:
+        # Leer el contenido del archivo TXT y eliminar comas y paréntesis
+        with open(file_path, 'r') as file:
+            text = file.read()
+
+        # Convertir el texto en una lista anidada de Python utilizando ast.literal_eval
+        try:
+            matrix = ast.literal_eval(text)
+            # Ahora, 'matrix' contiene la matriz bidimensional de Python
+            print("Matriz cargada correctamente en la variable 'matrix'.")
+            return matrix
+        except Exception as e:
+            print(f"Error al cargar la matriz: {str(e)}")
+    else:
+        print("No se seleccionó ningún archivo TXT.")
 
 
 # Dimensiones del laberinto (ancho y alto)
@@ -16,8 +45,10 @@ CARNE = (250, 191, 143)
 ROJO = (255, 0, 0)  # Color rojo
 NARANJA = (255, 192, 0)  # Color amarillo
 
+
+laberinto = pedir_laberinto()
 # Laberinto
-laberinto = [
+'''laberinto = [
     [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],
     [0,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
     [0,1,0,1,0,0,1,0,1,0,0,0,0,0,0],
@@ -33,8 +64,7 @@ laberinto = [
     [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0]
-]
-
+]'''
 def dibujar_laberinto():
     for fila in range(len(laberinto)):
         for columna in range(len(laberinto[0])):
@@ -59,7 +89,7 @@ def dibujar_laberinto():
     pygame.draw.rect(screen, ROJO, (14 * 40, 1 * 40, 40, 40))
 
     # Dibujar el punto amarillo en la posición actual
-    pygame.draw.rect(screen, NARANJA, (posicion_x, posicion_y, 40, 40),10)
+    pygame.draw.rect(screen, NARANJA, (posicion_x, posicion_y, 40, 40))
     pygame.display.flip()
 
 pygame.init()
