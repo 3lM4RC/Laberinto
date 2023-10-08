@@ -1,11 +1,10 @@
 import pygame
-import sys
 import tkinter as tk
 from tkinter import filedialog
-import pandas as pd
+import sys
 import ast
 import string
-
+import time
 
 # Colores
 BLANCO = (255, 255, 255)
@@ -17,16 +16,15 @@ CARNE = (250, 191, 143)
 ROJO = (255, 0, 0)  # Color rojo
 NARANJA = (255, 192, 0)  # Color amarillo
 
-
+'''Con las siguientes 2 fucniones podemos calcular el tamaño de la pagina dependiendo del tamaño del laberinto'''
 def calcular_alto(laberinto):
     ALTO = (len(laberinto) * 40)
     return ALTO
-
 def calcular_ancho(laberinto):
     ANCHO = (len(laberinto) * 40)
     return ANCHO
 
-
+'''Con esta función podemos abrir el archivo de laberinto que nosotros queramos'''
 def pedir_laberinto():
     # Crear una ventana principal
     root = tk.Tk()
@@ -51,6 +49,7 @@ def pedir_laberinto():
     else:
         print("No se seleccionó ningún archivo TXT.")
 
+'''Con esta función usamos el archivo consultado y cremos una lista bidimensional con las coordenadas impresas'''
 def crear_laberinto():
     laberinto = pedir_laberinto()
 
@@ -69,7 +68,7 @@ def crear_laberinto():
         print(fila)
     return laberinto
 
-
+'''Con esta función imprimios el laberinto constantemente'''
 def dibujar_laberinto(laberinto,screen, start, end, x, y):
     Sx, Sy = start
     Ex, Ey = end

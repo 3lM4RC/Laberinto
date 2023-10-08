@@ -1,25 +1,28 @@
 from functions import *
 
+#Creamos el laberinto
 laberinto = crear_laberinto()
 
 # Dimensiones del laberinto (ancho y alto)
 ANCHO = calcular_ancho(laberinto)
 ALTO = calcular_alto(laberinto)
 
+#Iniciamos el pygame
 pygame.init()
 screen = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("Maze")
-
 reloj = pygame.time.Clock()
 
-# Coordenadas iniciales del punto amarillo (entrada)
+# Coordenadas iniciales del jugador, y coordenadas finales
 x = 4 * 40
 y = 15 * 40
 ex = 15 * 40
 ey = 2 * 40
 
+#Tuplas para indicar el inicio y el final
 Start = (x, y)
 End = (ex, ey)
+
 game_over = False
 
 '''Aqui e donde el juego comienza'''
@@ -48,6 +51,7 @@ while not game_over:
 
     # Verificar si el cuadro amarillo llega al cuadro rojo
     if (x, y) == (ex, ey):
+        time.sleep(1)
         game_over = True
 
 print("¡Laberinto resuelto!")
