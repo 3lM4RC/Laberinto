@@ -63,7 +63,7 @@ while ejecutando:
                 x, y = event.pos
                 fila = y // int(alto_cuadrado + separacion)
                 columna = x // int(ancho_cuadrado + separacion)
-                if fila < cantidad_largo and columna < cantidad_ancho:
+                if (0 <fila < cantidad_largo) and (0 < columna < cantidad_ancho):
                     estado = estado_cuadrados[fila][columna]
                     estado_cuadrados[fila][columna] = 1 - estado  # Alternar entre blanco y negro
                     pintando = estado == 0  # Actualizar el estado de pintado/restauración
@@ -72,7 +72,7 @@ while ejecutando:
     x, y = pygame.mouse.get_pos()
     fila = y // int(alto_cuadrado + separacion)
     columna = x // int(ancho_cuadrado + separacion)
-    if fila < cantidad_largo and columna < cantidad_ancho:
+    if (0 <fila < cantidad_largo) and (0 < columna < cantidad_ancho):
         texto_coordenadas = f"Coordenadas: Fila {fila}, Columna {columna}"
 
     # Actualizar la ventana
