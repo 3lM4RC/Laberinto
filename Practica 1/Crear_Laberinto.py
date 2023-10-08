@@ -19,10 +19,10 @@ cuadrado = (ancho_cuadrado, alto_cuadrado)
 # Separación entre cuadrados
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)
 
-def calcular_alto_ancho(c_largo, c_ancho, tamaño, cuadrado):
+def calcular_alto_ancho(c_largo, c_ancho, proporcion, cuadrado):
     ancho, alto = cuadrado
-    cuadrado_ancho = ancho * tamaño
-    cuadrado_alto = alto * tamaño
+    cuadrado_ancho = ancho * proporcion
+    cuadrado_alto = alto * proporcion
 
     AL = (cuadrado_alto * c_largo) + (separacion * (c_largo + 1))+60
     AN = (cuadrado_ancho * c_ancho) + (separacion * (c_ancho + 1))

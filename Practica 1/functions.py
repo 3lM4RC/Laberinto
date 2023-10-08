@@ -18,13 +18,35 @@ CARNE = (250, 191, 143)
 ROJO = (255, 0, 0)
 NARANJA = (255, 192, 0)
 
+# Tamaño de los cuadrados
+ancho_cuadrado = .6
+alto_cuadrado = .4
+cuadrado = (ancho_cuadrado, alto_cuadrado)
+
+#Cantidad de cuardados
+c_largo = 15
+c_ancho = 15
+proporcion = 100
+
+# Tamaño de la separación
+separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)
+
+# Cuadro de texto para mostrar las coordenadas
+fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 24)
+
+def actualizar_cuadro_texto(texto_coordenadas, ventana, AL):
+    texto = fuente.render(texto_coordenadas, True, NEGRO)
+    ventana.blit(texto, (20, AL - 50))
+
 '''Con las siguientes 2 fucniones podemos calcular el tamaño de la pagina dependiendo del tamaño del laberinto'''
-def calcular_alto(laberinto):
-    ALTO = (len(laberinto) * 40)
-    return ALTO
-def calcular_ancho(laberinto):
-    ANCHO = (len(laberinto) * 40)
-    return ANCHO
+def calcular_alto_ancho():
+    ancho, alto = cuadrado
+    cuadrado_ancho = ancho * proporcion
+    cuadrado_alto = alto * proporcion
+
+    AL = (cuadrado_alto * c_largo) + (separacion * (c_largo + 1))+60
+    AN = (cuadrado_ancho * c_ancho) + (separacion * (c_ancho + 1))
+    return AN, AL
 
 '''Con esta función podemos abrir el archivo de laberinto que nosotros queramos'''
 def pedir_laberinto():
@@ -70,6 +92,10 @@ def crear_laberinto():
         print(fila)
     return laberinto
 
+
+ancho_cuadrado *= proporcion
+alto_cuadrado *= proporcion
+
 '''Con esta función imprimios el laberinto constantemente'''
 def dibujar_laberinto(laberinto,screen, start, end, x, y):
     Sx, Sy = start
@@ -83,15 +109,15 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y):
                 # Si el contenido en laberinto[fila][columna] es una letra, imprímela
 
                 coord = str(laberinto[fila][columna])
-                pygame.draw.rect(screen, GRIS, (columna * 40, fila * 40, 40, 40))
-                font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 24)  # Fuente y tamaño de la letra
-                texto = font.render(coord, True, NEGRO)  # Color del texto (negro)
+                pygame.draw.rect(screen, NEGRO, (columna * 60, fila * 40, ancho_cuadrado, alto_cuadrado))
+                font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 18)  # Fuente y tamaño de la letra
+                texto = font.render(coord, True, BLANCO)  # Color del texto (negro)
                 text_rect = texto.get_rect()
-                text_rect.center = (columna * 40 + 20, fila * 40 + 20)  # Centro del rectángulo
+                text_rect.center = (columna * 60 + 20, fila * 40 + 20)  # Centro del rectángulo
                 screen.blit(texto, text_rect)  # Dibuja el texto en el centro del rectángulo
             else: 
                 if laberinto[fila][columna] == 0:
-                    color = GRIS
+                    color = NEGRO
                 elif laberinto[fila][columna] == 2:
                     color = VERDE
                 elif laberinto[fila][columna] == 3:
@@ -102,14 +128,35 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y):
                     color = NARANJA
                 else: 
                     color = BLANCO
-                pygame.draw.rect(screen, color, (columna * 40, fila * 40, 40, 40))
+                _x = (columna * (ancho_cuadrado + separacion)) + separacion
+                _y = (fila * (alto_cuadrado + separacion)) + separacion
+                pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
 
     # Dibujar la entrada (azul) en [14][3]
-    pygame.draw.rect(screen, AZUL, (Sx,Sy, 40, 40))
+    pygame.draw.rect(screen, AZUL, (Sx,Sy, ancho_cuadrado, alto_cuadrado))
 
     # Dibujar la salida (rojo) en [14][1]
-    pygame.draw.rect(screen, ROJO, (Ex,Ey, 40, 40))
+    pygame.draw.rect(screen, ROJO, (Ex,Ey, ancho_cuadrado, alto_cuadrado))
 
     # Dibujar el punto amarillo en la posición actual
-    pygame.draw.rect(screen, NARANJA, (x, y, 40, 40))
+    pygame.draw.rect(screen, NARANJA, (x, y, ancho_cuadrado, alto_cuadrado))
     pygame.display.flip()
+
+'''Funcion para poder pintar los cuadros'''
+def pintar_cuadrado(laberinto, x, y):
+    fila = y // int(alto_cuadrado + separacion)
+    columna = x // int(ancho_cuadrado + separacion)
+    
+    if (0 < fila < c_largo) and (0 < columna < c_ancho):
+        laberinto[fila][columna] = 1
+
+def restaurar_cuadrado(laberinto, x, y):
+    fila = y // int(alto_cuadrado + separacion)
+    columna = x // int(ancho_cuadrado + separacion)
+    
+    if (0 < fila < c_largo) and (0 < columna < c_ancho):
+        laberinto[fila][columna] = 0
+
+def calcular_posicion(coord, tamaño):
+    value = coord * (tamaño + separacion) + separacion
+    return value
