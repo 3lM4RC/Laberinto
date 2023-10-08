@@ -7,14 +7,16 @@ import string
 import time
 
 # Colores
+FONDO = (173, 173, 173)
 BLANCO = (255, 255, 255)
 NEGRO = (0, 0, 0)
 GRIS = (128,128,128)
+GRIS_OX = (85, 85, 85)
 VERDE = (150,210,80)
-AZUL = (0, 175, 255)  # Color azul
+AZUL = (0, 175, 255)
 CARNE = (250, 191, 143)
-ROJO = (255, 0, 0)  # Color rojo
-NARANJA = (255, 192, 0)  # Color amarillo
+ROJO = (255, 0, 0)
+NARANJA = (255, 192, 0)
 
 '''Con las siguientes 2 fucniones podemos calcular el tamaño de la pagina dependiendo del tamaño del laberinto'''
 def calcular_alto(laberinto):
