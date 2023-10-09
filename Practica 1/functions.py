@@ -17,6 +17,7 @@ AZUL = (0, 175, 255)
 CARNE = (250, 191, 143)
 ROJO = (255, 0, 0)
 NARANJA = (255, 192, 0)
+AMARILLO = (255, 255, 0)
 
 # Tamaño de los cuadrados
 ancho_cuadrado = .6
@@ -31,7 +32,7 @@ proporcion = 100
 # Tamaño de la separación
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)
 
-def actualizar_cuadro_texto(texto_coordenadas, ventana, AL):
+def actualizar_cuadro_texto(texto_coordenadas, ventana, AL,fuente):
     texto = fuente.render(texto_coordenadas, True, NEGRO)
     ventana.blit(texto, (20, AL - 50))
 
@@ -71,8 +72,9 @@ def pedir_laberinto():
         print("No se seleccionó ningún archivo TXT.")
 
 '''Con esta función usamos el archivo consultado y cremos una lista bidimensional con las coordenadas impresas'''
-def crear_laberinto():
-    laberinto = pedir_laberinto()
+def crear_laberinto(laberinto):
+    if not laberinto:
+        laberinto = pedir_laberinto()
 
     #Aqui es donde ponemos las coordenadas laterales con numeros
     cantidad_numeros = len(laberinto[0])
@@ -156,3 +158,20 @@ def restaurar_cuadrado(laberinto, x, y):
 def calcular_posicion(coord, tamaño):
     value = coord * (tamaño + separacion) + separacion
     return value
+
+def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus):
+    opciones = ["1. Comenzar juego", "2. Cargar un mapa", "3. Crear mapa nuevo", "4. Ver opciones", "5. Salir del juego"]
+    boton_alto = 80  # Altura de cada botón
+    espacio_entre_botones = 10  # Espacio entre botones
+    total_botones = len(opciones)
+    alto_total_botones = total_botones * (boton_alto + espacio_entre_botones) - espacio_entre_botones
+    y_inicial = (ALTO - alto_total_botones) // 2
+    
+    for i, opcion in enumerate(opciones):
+        texto_opcion = fuente_menus.render(opcion, True, BLANCO)
+        cuadro_opcion = pygame.Rect((ANCHO-300) // 2, y_inicial + i * (boton_alto + espacio_entre_botones), 300, boton_alto)
+        pygame.draw.rect(pantalla, NEGRO, cuadro_opcion)
+        pygame.draw.rect(pantalla, AMARILLO, cuadro_opcion, 5)  # Cuadro de opción
+        text_rect = texto_opcion.get_rect()
+        text_rect.center = cuadro_opcion.center
+        pantalla.blit(texto_opcion, text_rect)

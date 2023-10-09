@@ -1,7 +1,8 @@
 from functions import *
 
+laberinto = []
 #Creamos el laberinto
-laberinto = crear_laberinto()
+laberinto = crear_laberinto(laberinto)
 
 # Dimensiones del laberinto (ancho y alto)
 ANCHO, ALTO = calcular_alto_ancho()

@@ -1,12 +1,11 @@
-import pygame
-import sys
-
+from functions import *
 pygame.init()
 
 # Configuración de la pantalla
 ANCHO, ALTO = 800, 600
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
-pygame.display.set_caption("Mi Juego")
+pygame.display.set_caption("Maze Runner")
+laberinto =[]
 
 # Colores
 BLANCO = (255, 255, 255)
@@ -22,6 +21,9 @@ fuente_menus = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 20)
 ESTADO_INICIO = 0
 ESTADO_MENU = 1
 ESTADO_JUEGO = 2
+ESTADO_MAPA = 3
+ESTADO_CREAR_MAPA = 4
+ESTADO_OPCIONES = 5
 estado_actual = ESTADO_INICIO
 
 # Bucle principal
@@ -32,6 +34,7 @@ tiempo_anterior = pygame.time.get_ticks()
 intervalo_parpadeo = 500  # Intervalo de parpadeo en milisegundos
 
 while True:
+    pantalla.fill(NEGRO)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -46,43 +49,33 @@ while True:
                         estado_actual = ESTADO_JUEGO
                     elif event.key == pygame.K_2:
                         print("Cargar un mapa")
+                        estado_actual = ESTADO_MAPA
                     elif event.key == pygame.K_3:
                         print("Crear mapa nuevo")
+                        estado_actual = ESTADO_CREAR_MAPA
                     elif event.key == pygame.K_4:
                         print("Ver opciones")
+                        estado_actual = ESTADO_CREAR_MAPA
                     elif event.key == pygame.K_5:
                         pygame.quit()
                         sys.exit()
-
-    pantalla.fill(NEGRO)
+            elif estado_actual == ESTADO_JUEGO:
+                pantalla.fill(BLANCO)
 
     # Lógica de parpadeo del mensaje
+    
     tiempo_actual = pygame.time.get_ticks()
-    if tiempo_actual - tiempo_anterior >= intervalo_parpadeo:
-        mostrar_mensaje = not mostrar_mensaje
-        tiempo_anterior = tiempo_actual
-
-    if mostrar_mensaje and (estado_actual == ESTADO_INICIO):
-        mensaje = "Presiona cualquier tecla para comenzar"
-        texto = fuente_menus.render(mensaje, True, VERDE)
-        pantalla.blit(texto, (ANCHO // 2 - texto.get_width() // 2, ALTO // 2 - texto.get_height() // 2))
+    if(estado_actual == ESTADO_INICIO):
+        if tiempo_actual - tiempo_anterior >= intervalo_parpadeo:
+            mostrar_mensaje = not mostrar_mensaje
+            tiempo_anterior = tiempo_actual
+        if mostrar_mensaje:
+            mensaje = "Presiona cualquier tecla para comenzar"
+            texto = fuente_menus.render(mensaje, True, VERDE)
+            pantalla.blit(texto, (ANCHO // 2 - texto.get_width() // 2, ALTO // 1 - texto.get_height() // 0.5))
 
     elif estado_actual == ESTADO_MENU:
-        opciones = ["1. Comenzar juego", "2. Cargar un mapa", "3. Crear mapa nuevo", "4. Ver opciones", "5. Salir del juego"]
-        boton_alto = 80  # Altura de cada botón
-        espacio_entre_botones = 10  # Espacio entre botones
-        total_botones = len(opciones)
-        alto_total_botones = total_botones * (boton_alto + espacio_entre_botones) - espacio_entre_botones
-        y_inicial = (ALTO - alto_total_botones) // 2
-
-        for i, opcion in enumerate(opciones):
-            texto_opcion = fuente_menus.render(opcion, True, BLANCO)
-            cuadro_opcion = pygame.Rect((ANCHO-300) // 2, y_inicial + i * (boton_alto + espacio_entre_botones), 300, boton_alto)
-            pygame.draw.rect(pantalla, NEGRO, cuadro_opcion)
-            pygame.draw.rect(pantalla, AMARILLO, cuadro_opcion, 5)  # Cuadro de opción
-            text_rect = texto_opcion.get_rect()
-            text_rect.center = cuadro_opcion.center
-            pantalla.blit(texto_opcion, text_rect)
+        imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus)
 
     elif estado_actual == ESTADO_JUEGO:
         # Lógica y dibujo del juego
@@ -92,5 +85,11 @@ while True:
         x = mouse_pos[0]
         y = mouse_pos[1]
         pygame.draw.rect(pantalla,VERDE,(x,y,100,100))
+    elif estado_actual == ESTADO_MAPA:
+        laberinto = crear_laberinto(laberinto)
+        estado_actual = ESTADO_JUEGO
+    #elif estado_actual == ESTADO_CREAR_MAPA:
+
+
     pygame.display.flip()
     reloj.tick(60)
