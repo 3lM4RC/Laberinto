@@ -31,9 +31,6 @@ proporcion = 100
 # Tamaño de la separación
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)
 
-# Cuadro de texto para mostrar las coordenadas
-fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 24)
-
 def actualizar_cuadro_texto(texto_coordenadas, ventana, AL):
     texto = fuente.render(texto_coordenadas, True, NEGRO)
     ventana.blit(texto, (20, AL - 50))
@@ -140,7 +137,6 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y):
 
     # Dibujar el punto amarillo en la posición actual
     pygame.draw.rect(screen, NARANJA, (x, y, ancho_cuadrado, alto_cuadrado))
-    pygame.display.flip()
 
 '''Funcion para poder pintar los cuadros'''
 def pintar_cuadrado(laberinto, x, y):

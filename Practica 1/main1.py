@@ -23,6 +23,9 @@ Start = (x, y)
 End = (ex, ey)
 
 game_over = False
+
+# Cuadro de texto para mostrar las coordenadas
+fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 24)
 texto_coordenadas = ""
 
 '''Aqui es donde podemos pintar el laberinto

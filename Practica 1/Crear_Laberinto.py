@@ -1,9 +1,9 @@
 import pygame
 import sys
 
-cantidad_largo = 15
-cantidad_ancho = 15
-proporcion = 40
+cantidad_largo = 16
+cantidad_ancho = 16
+proporcion = 80
 
 # Definir colores
 FONDO = (173, 173, 173)
