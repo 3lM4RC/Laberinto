@@ -89,8 +89,8 @@ while ejecutando:
     for fila in range(len(laberinto)):
         for columna in range(len(laberinto[0])):
             color = BLANCO if laberinto[fila][columna] else NEGRO
-            _x = calcular_posicion(columna, ancho_cuadrado)
-            _y = calcular_posicion(fila, alto_cuadrado)
+            _x = calcular_posicion(columna, ancho_cuadrado,separacion)
+            _y = calcular_posicion(fila, alto_cuadrado,separacion)
             pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
 
     actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
@@ -117,7 +117,7 @@ while not game_over:
                 if y+1 <= 15 and laberinto[y+1][x] == 1:
                     y+=1
     
-    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado)
+    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado,separacion)
     reloj.tick(60)
     pygame.display.flip()
 

@@ -6,8 +6,6 @@ import ast
 import string
 import time
 
-separacion = 2
-
 # Colores
 FONDO = (173, 173, 173)
 BLANCO = (255, 255, 255)
@@ -84,14 +82,14 @@ def crear_laberinto(laberinto,direccion):
     return laberinto
 
 '''Con esta función imprimios el laberinto constantemente'''
-def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado):
+def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,separacion):
     ancho_cuadrado, alto_cuadrado = dim_cuadrado
     Sx, Sy = start
-    Sx = calcular_posicion(Sx,ancho_cuadrado)
-    Sy = calcular_posicion(Sy, alto_cuadrado)
+    Sx = calcular_posicion(Sx,ancho_cuadrado,separacion)
+    Sy = calcular_posicion(Sy, alto_cuadrado,separacion)
     Ex, Ey = end
-    Ex = calcular_posicion(Ex,ancho_cuadrado)
-    Ey = calcular_posicion(Ey,alto_cuadrado)
+    Ex = calcular_posicion(Ex,ancho_cuadrado,separacion)
+    Ey = calcular_posicion(Ey,alto_cuadrado,separacion)
     for fila in range(len(laberinto)):
         for columna in range(len(laberinto[0])):
             if (fila == 0) | (columna == 0):
@@ -99,8 +97,8 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado):
                 #pygame.draw.rect(screen, GRIS, (columna * 40, fila * 40, 40, 40))  
                 #if isinstance(laberinto[fila][columna], str):
                 # Si el contenido en laberinto[fila][columna] es una letra, imprímela
-                col = calcular_posicion(columna,ancho_cuadrado)
-                fil = calcular_posicion(fila,alto_cuadrado)
+                col = calcular_posicion(columna,ancho_cuadrado,separacion)
+                fil = calcular_posicion(fila,alto_cuadrado,separacion)
                 coord = str(laberinto[fila][columna])
                 pygame.draw.rect(screen, NEGRO, (col,fil, ancho_cuadrado, alto_cuadrado))
                 font = fuente
@@ -121,11 +119,11 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado):
                     color = NARANJA
                 else: 
                     color = BLANCO
-                _x = calcular_posicion(columna,ancho_cuadrado)
-                _y = calcular_posicion(fila,alto_cuadrado)
+                _x = calcular_posicion(columna,ancho_cuadrado,separacion)
+                _y = calcular_posicion(fila,alto_cuadrado,separacion)
                 pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
-    x = calcular_posicion(x,ancho_cuadrado)
-    y = calcular_posicion(y,alto_cuadrado)
+    x = calcular_posicion(x,ancho_cuadrado,separacion)
+    y = calcular_posicion(y,alto_cuadrado,separacion)
     # Dibujar la entrada (azul) en [14][3]
     pygame.draw.rect(screen, AZUL, (Sx,Sy, ancho_cuadrado, alto_cuadrado))
 
@@ -156,7 +154,7 @@ def restaurar_cuadrado(laberinto, x, y, dim_cuadrado,separacion,c_list):
         laberinto[fila][columna] = 0
 
 '''Funcion para transformar una posicion entera en una coordenada de panatalla'''
-def calcular_posicion(coord, tamaño):
+def calcular_posicion(coord, tamaño,separacion):
     value = coord * (tamaño + separacion) + separacion
     return value
 
