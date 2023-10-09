@@ -27,7 +27,7 @@ cuadrado = (ancho_cuadrado, alto_cuadrado)
 #Cantidad de cuardados
 c_largo = 15
 c_ancho = 15
-proporcion = 100
+proporcion = 80
 
 # Tamaño de la separación
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)
@@ -96,9 +96,13 @@ ancho_cuadrado *= proporcion
 alto_cuadrado *= proporcion
 
 '''Con esta función imprimios el laberinto constantemente'''
-def dibujar_laberinto(laberinto,screen, start, end, x, y):
+def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente):
     Sx, Sy = start
+    Sx = calcular_posicion(Sx,ancho_cuadrado)
+    Sy = calcular_posicion(Sy, alto_cuadrado)
     Ex, Ey = end
+    Ex = calcular_posicion(Ex,ancho_cuadrado)
+    Ey = calcular_posicion(Ey,alto_cuadrado)
     for fila in range(len(laberinto)):
         for columna in range(len(laberinto[0])):
             if (fila == 0) | (columna == 0):
@@ -108,11 +112,11 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y):
                 # Si el contenido en laberinto[fila][columna] es una letra, imprímela
 
                 coord = str(laberinto[fila][columna])
-                pygame.draw.rect(screen, NEGRO, (columna * 60, fila * 40, ancho_cuadrado, alto_cuadrado))
-                font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 18)  # Fuente y tamaño de la letra
+                pygame.draw.rect(screen, NEGRO, (calcular_posicion(columna,ancho_cuadrado),calcular_posicion(fila,alto_cuadrado), ancho_cuadrado, alto_cuadrado))
+                font = fuente
                 texto = font.render(coord, True, BLANCO)  # Color del texto (negro)
                 text_rect = texto.get_rect()
-                text_rect.center = (columna * 60 + 20, fila * 40 + 20)  # Centro del rectángulo
+                text_rect.center = (ancho_cuadrado // 2 - texto.get_width() // 2, 20)  # Centro del rectángulo
                 screen.blit(texto, text_rect)  # Dibuja el texto en el centro del rectángulo
             else: 
                 if laberinto[fila][columna] == 0:
@@ -126,11 +130,12 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y):
                 elif laberinto[fila][columna] == 5:
                     color = NARANJA
                 else: 
-                    color = BLANCO
-                _x = (columna * (ancho_cuadrado + separacion)) + separacion
-                _y = (fila * (alto_cuadrado + separacion)) + separacion
+                    color = GRIS
+                _x = calcular_posicion(columna,ancho_cuadrado)
+                _y = calcular_posicion(fila,alto_cuadrado)
                 pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
-
+    x = calcular_posicion(x,ancho_cuadrado)
+    y = calcular_posicion(y,alto_cuadrado)
     # Dibujar la entrada (azul) en [14][3]
     pygame.draw.rect(screen, AZUL, (Sx,Sy, ancho_cuadrado, alto_cuadrado))
 

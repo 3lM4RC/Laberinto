@@ -1,6 +1,22 @@
 from functions import *
 
-laberinto = []
+laberinto = [
+    [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],
+    [0,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
+    [0,1,0,1,0,0,1,0,1,0,0,0,0,0,0],
+    [0,0,1,1,1,1,1,0,1,0,0,0,0,0,0],
+    [0,0,0,1,0,1,0,0,1,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,0,1,0,0,0,0,0,0],
+    [0,1,1,1,1,1,1,0,1,0,0,0,0,0,0],
+    [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
+    [0,1,0,1,1,1,1,1,1,0,0,0,0,0,0],
+    [1,1,0,1,0,0,0,1,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
+    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0]
+]
 #Creamos el laberinto
 laberinto = crear_laberinto(laberinto)
 
@@ -14,10 +30,10 @@ pygame.display.set_caption("Maze")
 reloj = pygame.time.Clock()
 
 # Coordenadas iniciales del jugador, y coordenadas finales
-x = calcular_posicion(4, 40)
-y = calcular_posicion(15, 60)
-ex = calcular_posicion(15,40)
-ey = calcular_posicion(2,60)
+x = 4
+y = 15
+ex = 14
+ey = 2
 
 #Tuplas para indicar el inicio y el final
 Start = (x, y)
@@ -26,7 +42,7 @@ End = (ex, ey)
 game_over = False
 
 # Cuadro de texto para mostrar las coordenadas
-fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 24)
+fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 20)
 texto_coordenadas = ""
 
 '''Aqui es donde podemos pintar el laberinto
@@ -61,27 +77,28 @@ while ejecutando:
 
 '''Aqui e donde el juego comienza'''
 while not game_over:
-    screen.fill(BLANCO)
+    screen.fill(FONDO)
     for event in pygame.event.get():
         if event.type == pygame.QUIT: ##Si presionamos la X o quitamos el juego:
             pygame.quit() #Abortamos el pygame
             sys.exit() #Sliamos del programa
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                if x - 60 >= 0 and laberinto[y // 40][x // 60 - 1] == 1:
-                    x -= 60
+                if x-1 >= 0 and laberinto[y][x-1] == 1:
+                    x-=1
             elif event.key == pygame.K_RIGHT:
-                if x + 60 < ANCHO and laberinto[y // 40][x // 60 + 1] == 1:
-                    x += 60
+                if x+1 <= 15 and laberinto[y][x+1] == 1:
+                    x+=1
             elif event.key == pygame.K_UP:
-                if y - 40 >= 0 and laberinto[y // 40 - 1][x // 40] == 1:
-                    y -= 40
+                if y-1 >= 0 and laberinto[y-1][x] == 1:
+                    y-=1
             elif event.key == pygame.K_DOWN:
-                if y + 40 < ALTO and laberinto[y // 40 + 1][x // 40] == 1:
-                    y += 40
+                if y+1 <= 15 and laberinto[y+1][x] == 1:
+                    y+=1
     
-    dibujar_laberinto(laberinto, screen, Start, End, x, y)
+    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente)
     reloj.tick(60)
+    pygame.display.flip()
 
     # Verificar si el cuadro amarillo llega al cuadro rojo
     if (x, y) == (ex, ey):
