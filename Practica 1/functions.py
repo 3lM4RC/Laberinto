@@ -25,9 +25,9 @@ alto_cuadrado = .4
 cuadrado = (ancho_cuadrado, alto_cuadrado)
 
 #Cantidad de cuardados
-c_largo = 15
+c_largo = 16
 c_ancho = 16
-proporcion = 50
+proporcion = 80
 
 # Tamaño de la separación
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)
@@ -47,13 +47,15 @@ def calcular_alto_ancho():
     return AN, AL
 
 '''Con esta función podemos abrir el archivo de laberinto que nosotros queramos'''
-def pedir_laberinto():
-    # Crear una ventana principal
-    root = tk.Tk()
-    root.withdraw()  # Ocultar la ventana principal
+def pedir_laberinto(file_path):
+    if not file_path:
+        # Crear una ventana principal
+        root = tk.Tk()
+        root.withdraw()  # Ocultar la ventana principal
 
-    # Abrir el cuadro de diálogo para seleccionar un archivo TXT
-    file_path = filedialog.askopenfilename(filetypes=[("Archivos TXT", "*.txt")])
+        # Abrir el cuadro de diálogo para seleccionar un archivo TXT
+        file_path = filedialog.askopenfilename(filetypes=[("Archivos TXT", "*.txt")])
+        print(file_path)
 
     if file_path:
         # Leer el contenido del archivo TXT y eliminar comas y paréntesis
@@ -72,9 +74,9 @@ def pedir_laberinto():
         print("No se seleccionó ningún archivo TXT.")
 
 '''Con esta función usamos el archivo consultado y cremos una lista bidimensional con las coordenadas impresas'''
-def crear_laberinto(laberinto):
+def crear_laberinto(laberinto,direccion):
     if not laberinto:
-        laberinto = pedir_laberinto()
+        laberinto = pedir_laberinto(direccion)
 
     #Aqui es donde ponemos las coordenadas laterales con numeros
     cantidad_numeros = len(laberinto[0])
@@ -121,7 +123,7 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente):
                 screen.blit(texto, text_rect)  # Dibuja el texto en el centro del rectángulo
             else: 
                 if laberinto[fila][columna] == 0:
-                    color = NEGRO
+                    color = GRIS_OX
                 elif laberinto[fila][columna] == 2:
                     color = VERDE
                 elif laberinto[fila][columna] == 3:
@@ -131,7 +133,7 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente):
                 elif laberinto[fila][columna] == 5:
                     color = NARANJA
                 else: 
-                    color = GRIS
+                    color = BLANCO
                 _x = calcular_posicion(columna,ancho_cuadrado)
                 _y = calcular_posicion(fila,alto_cuadrado)
                 pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
@@ -151,16 +153,18 @@ def pintar_cuadrado(laberinto, x, y):
     fila = y // int(alto_cuadrado + separacion)
     columna = x // int(ancho_cuadrado + separacion)
     
-    if (0 < fila < c_largo) and (0 < columna < c_ancho):
+    if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
         laberinto[fila][columna] = 1
 
+'''Funcion pintar los cuadros de negro otra vez'''
 def restaurar_cuadrado(laberinto, x, y):
     fila = y // int(alto_cuadrado + separacion)
     columna = x // int(ancho_cuadrado + separacion)
     
-    if (0 < fila < c_largo) and (0 < columna < c_ancho):
+    if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
         laberinto[fila][columna] = 0
 
+'''Funcion para transformar una posicion entera en una coordenada de panatalla'''
 def calcular_posicion(coord, tamaño):
     value = coord * (tamaño + separacion) + separacion
     return value

@@ -1,6 +1,6 @@
 from functions import *
 
-laberinto = [
+'''laberinto = [
     [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],
     [0,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
     [0,1,0,1,0,0,1,0,1,0,0,0,0,0,0],
@@ -16,9 +16,11 @@ laberinto = [
     [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
     [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0]
-]
+]'''
+laberinto = []
+direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/Repositorio/Laberinto/Practica 1/Laberintos/Laberinto3.txt"
 #Creamos el laberinto
-laberinto = crear_laberinto(laberinto)
+laberinto = crear_laberinto(laberinto,direccion)
 
 # Dimensiones del laberinto (ancho y alto)
 ANCHO, ALTO = calcular_alto_ancho()
@@ -40,40 +42,44 @@ Start = (x, y)
 End = (ex, ey)
 
 game_over = False
+ejecutando = True
 
 # Cuadro de texto para mostrar las coordenadas
 fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 20)
 texto_coordenadas = ""
 
-'''Aqui es donde podemos pintar el laberinto
+'''Aqui es donde podemos pintar el laberinto'''
 while ejecutando:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if (event.type == pygame.QUIT):
             ejecutando = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Clic izquierdo (pintar gris)
                 pintar_cuadrado(laberinto, *event.pos)
             elif event.button == 3:  # Clic derecho (restaurar a negro)
                 restaurar_cuadrado(laberinto, *event.pos)
+        elif (event.type == pygame.KEYDOWN):
+            if event.key == pygame.K_SPACE:
+                ejecutando = False
 
     # Mostrar las coordenadas del mouse en la consola
-    x, y = pygame.mouse.get_pos()
-    fila = y // int(alto_cuadrado + separacion)
-    columna = x // int(ancho_cuadrado + separacion)
-    if fila < 15 and columna < 15:
+    _x, _y = pygame.mouse.get_pos()
+    fila = _y // int(alto_cuadrado + separacion)
+    columna = _x // int(ancho_cuadrado + separacion)
+    if 0 < fila < 16 and 0 < columna < 16:
         texto_coordenadas = f"Coordenadas del mouse: Fila {fila}, Columna {columna}"
 
     # Actualizar la screen
     screen.fill(FONDO)
-    for fila in range(15):
-        for columna in range(15):
+    for fila in range(len(laberinto)):
+        for columna in range(len(laberinto[0])):
             color = BLANCO if laberinto[fila][columna] else NEGRO
-            x = (columna * (ancho_cuadrado + separacion)) + separacion
-            y = (fila * (alto_cuadrado + separacion)) + separacion
-            pygame.draw.rect(screen, color, (x, y, ancho_cuadrado, alto_cuadrado))
+            _x = calcular_posicion(columna, ancho_cuadrado)
+            _y = calcular_posicion(fila, alto_cuadrado)
+            pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
 
-    actualizar_cuadro_texto(texto_coordenadas,screen,ALTO)
-    pygame.display.flip()'''
+    actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
+    pygame.display.flip()
 
 '''Aqui e donde el juego comienza'''
 while not game_over:
