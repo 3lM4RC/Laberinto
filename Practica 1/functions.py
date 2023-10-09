@@ -26,8 +26,8 @@ cuadrado = (ancho_cuadrado, alto_cuadrado)
 
 #Cantidad de cuardados
 c_largo = 15
-c_ancho = 15
-proporcion = 80
+c_ancho = 16
+proporcion = 50
 
 # Tamaño de la separación
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)
@@ -42,7 +42,7 @@ def calcular_alto_ancho():
     cuadrado_ancho = ancho * proporcion
     cuadrado_alto = alto * proporcion
 
-    AL = (cuadrado_alto * c_largo) + (separacion * (c_largo + 1))+60
+    AL = (cuadrado_alto * c_largo) + (separacion * (c_largo + 1))+100
     AN = (cuadrado_ancho * c_ancho) + (separacion * (c_ancho + 1))
     return AN, AL
 
@@ -110,13 +110,14 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente):
                 #pygame.draw.rect(screen, GRIS, (columna * 40, fila * 40, 40, 40))  
                 #if isinstance(laberinto[fila][columna], str):
                 # Si el contenido en laberinto[fila][columna] es una letra, imprímela
-
+                col = calcular_posicion(columna,ancho_cuadrado)
+                fil = calcular_posicion(fila,alto_cuadrado)
                 coord = str(laberinto[fila][columna])
-                pygame.draw.rect(screen, NEGRO, (calcular_posicion(columna,ancho_cuadrado),calcular_posicion(fila,alto_cuadrado), ancho_cuadrado, alto_cuadrado))
+                pygame.draw.rect(screen, NEGRO, (col,fil, ancho_cuadrado, alto_cuadrado))
                 font = fuente
                 texto = font.render(coord, True, BLANCO)  # Color del texto (negro)
                 text_rect = texto.get_rect()
-                text_rect.center = (ancho_cuadrado // 2 - texto.get_width() // 2, 20)  # Centro del rectángulo
+                text_rect.center = (col+(ancho_cuadrado/2),fil+(alto_cuadrado/2))  # Centro del rectángulo
                 screen.blit(texto, text_rect)  # Dibuja el texto en el centro del rectángulo
             else: 
                 if laberinto[fila][columna] == 0:

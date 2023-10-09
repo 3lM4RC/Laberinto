@@ -32,7 +32,7 @@ reloj = pygame.time.Clock()
 # Coordenadas iniciales del jugador, y coordenadas finales
 x = 4
 y = 15
-ex = 14
+ex = 15
 ey = 2
 
 #Tuplas para indicar el inicio y el final
