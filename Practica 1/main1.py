@@ -18,12 +18,27 @@ from functions import *
     [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0]
 ]'''
 laberinto = []
-direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/Repositorio/Laberinto/Practica 1/Laberintos/Laberinto3.txt"
-#Creamos el laberinto
-laberinto = crear_laberinto(laberinto,direccion)
+direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/Repositorio/Laberinto/Practica 1/Laberintos/Laberinto1.txt"
+#direccion = ""
+
+laberinto = crear_laberinto(laberinto,direccion)# Creamos el laberinto
+
+
+c_ancho = 16
+c_largo = 16
+c_list = (c_ancho, c_largo)
+ancho_cuadrado = .5 # Ancho de los cuadrados
+alto_cuadrado = .3 # Alto de los cuadrados
+cuadrado = (ancho_cuadrado, alto_cuadrado)
+separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)# Tamaño de la separación
+proporcion = 70# Proporcion
 
 # Dimensiones del laberinto (ancho y alto)
-ANCHO, ALTO = calcular_alto_ancho()
+ANCHO, ALTO = calcular_alto_ancho(cuadrado,separacion,proporcion, c_list)
+
+ancho_cuadrado *= proporcion
+alto_cuadrado *= proporcion
+dim_cuadrado = (ancho_cuadrado, alto_cuadrado)
 
 #Iniciamos el pygame
 pygame.init()
@@ -55,9 +70,9 @@ while ejecutando:
             ejecutando = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Clic izquierdo (pintar gris)
-                pintar_cuadrado(laberinto, *event.pos)
+                pintar_cuadrado(laberinto, *event.pos,dim_cuadrado,separacion,c_list)
             elif event.button == 3:  # Clic derecho (restaurar a negro)
-                restaurar_cuadrado(laberinto, *event.pos)
+                restaurar_cuadrado(laberinto, *event.pos,dim_cuadrado,separacion,c_list)
         elif (event.type == pygame.KEYDOWN):
             if event.key == pygame.K_SPACE:
                 ejecutando = False
@@ -102,7 +117,7 @@ while not game_over:
                 if y+1 <= 15 and laberinto[y+1][x] == 1:
                     y+=1
     
-    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente)
+    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado)
     reloj.tick(60)
     pygame.display.flip()
 

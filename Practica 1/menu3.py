@@ -24,6 +24,7 @@ ESTADO_JUEGO = 2
 ESTADO_MAPA = 3
 ESTADO_CREAR_MAPA = 4
 ESTADO_OPCIONES = 5
+ESTADO_SECRETO = 6
 estado_actual = ESTADO_INICIO
 
 # Bucle principal
@@ -59,8 +60,9 @@ while True:
                     elif event.key == pygame.K_5:
                         pygame.quit()
                         sys.exit()
-            elif estado_actual == ESTADO_JUEGO:
-                pantalla.fill(BLANCO)
+                    elif event.key == pygame.K_6:
+                        print("Juego secreto")
+                        estado_actual = ESTADO_SECRETO
 
     # Lógica de parpadeo del mensaje
     
@@ -77,7 +79,7 @@ while True:
     elif estado_actual == ESTADO_MENU:
         imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus)
 
-    elif estado_actual == ESTADO_JUEGO:
+    elif estado_actual == ESTADO_SECRETO:
         # Lógica y dibujo del juego
         pygame.mouse.set_visible(0)
         pantalla.fill(BLANCO)

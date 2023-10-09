@@ -6,6 +6,8 @@ import ast
 import string
 import time
 
+separacion = 2
+
 # Colores
 FONDO = (173, 173, 173)
 BLANCO = (255, 255, 255)
@@ -19,25 +21,13 @@ ROJO = (255, 0, 0)
 NARANJA = (255, 192, 0)
 AMARILLO = (255, 255, 0)
 
-# Tamaño de los cuadrados
-ancho_cuadrado = .6
-alto_cuadrado = .4
-cuadrado = (ancho_cuadrado, alto_cuadrado)
-
-#Cantidad de cuardados
-c_largo = 16
-c_ancho = 16
-proporcion = 80
-
-# Tamaño de la separación
-separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)
-
 def actualizar_cuadro_texto(texto_coordenadas, ventana, AL,fuente):
     texto = fuente.render(texto_coordenadas, True, NEGRO)
     ventana.blit(texto, (20, AL - 50))
 
 '''Con las siguientes 2 fucniones podemos calcular el tamaño de la pagina dependiendo del tamaño del laberinto'''
-def calcular_alto_ancho():
+def calcular_alto_ancho(cuadrado,separacion,proporcion,c_list):
+    c_ancho, c_largo = c_list
     ancho, alto = cuadrado
     cuadrado_ancho = ancho * proporcion
     cuadrado_alto = alto * proporcion
@@ -93,12 +83,9 @@ def crear_laberinto(laberinto,direccion):
         print(fila)
     return laberinto
 
-
-ancho_cuadrado *= proporcion
-alto_cuadrado *= proporcion
-
 '''Con esta función imprimios el laberinto constantemente'''
-def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente):
+def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado):
+    ancho_cuadrado, alto_cuadrado = dim_cuadrado
     Sx, Sy = start
     Sx = calcular_posicion(Sx,ancho_cuadrado)
     Sy = calcular_posicion(Sy, alto_cuadrado)
@@ -149,7 +136,9 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente):
     pygame.draw.rect(screen, NARANJA, (x, y, ancho_cuadrado, alto_cuadrado))
 
 '''Funcion para poder pintar los cuadros'''
-def pintar_cuadrado(laberinto, x, y):
+def pintar_cuadrado(laberinto, x, y,dim_cuadrado,separacion,c_list):
+    c_ancho, c_largo = c_list
+    ancho_cuadrado, alto_cuadrado = dim_cuadrado
     fila = y // int(alto_cuadrado + separacion)
     columna = x // int(ancho_cuadrado + separacion)
     
@@ -157,7 +146,9 @@ def pintar_cuadrado(laberinto, x, y):
         laberinto[fila][columna] = 1
 
 '''Funcion pintar los cuadros de negro otra vez'''
-def restaurar_cuadrado(laberinto, x, y):
+def restaurar_cuadrado(laberinto, x, y, dim_cuadrado,separacion,c_list):
+    c_ancho, c_largo = c_list
+    ancho_cuadrado, alto_cuadrado = dim_cuadrado
     fila = y // int(alto_cuadrado + separacion)
     columna = x // int(ancho_cuadrado + separacion)
     
