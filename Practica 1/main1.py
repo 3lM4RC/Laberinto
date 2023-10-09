@@ -24,14 +24,14 @@ direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/
 laberinto = crear_laberinto(laberinto,direccion)# Creamos el laberinto
 
 
-c_ancho = 16
-c_largo = 16
+c_ancho = len(laberinto)
+c_largo = len(laberinto[0])+1
 c_list = (c_ancho, c_largo)
-ancho_cuadrado = .5 # Ancho de los cuadrados
-alto_cuadrado = .3 # Alto de los cuadrados
+ancho_cuadrado = .6 # Ancho de los cuadrados
+alto_cuadrado = .4 # Alto de los cuadrados
 cuadrado = (ancho_cuadrado, alto_cuadrado)
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)# Tamaño de la separación
-proporcion = 70# Proporcion
+proporcion = 50# Proporcion
 
 # Dimensiones del laberinto (ancho y alto)
 ANCHO, ALTO = calcular_alto_ancho(cuadrado,separacion,proporcion, c_list)

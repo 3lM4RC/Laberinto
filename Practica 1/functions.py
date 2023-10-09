@@ -32,7 +32,7 @@ def calcular_alto_ancho(cuadrado,separacion,proporcion,c_list):
     cuadrado_ancho = ancho * proporcion
     cuadrado_alto = alto * proporcion
 
-    AL = (cuadrado_alto * c_largo) + (separacion * (c_largo + 1))+100
+    AL = (cuadrado_alto * c_largo) + (separacion * (c_largo + 1))+60
     AN = (cuadrado_ancho * c_ancho) + (separacion * (c_ancho + 1))
     return AN, AL
 
