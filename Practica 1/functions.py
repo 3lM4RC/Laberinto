@@ -19,9 +19,9 @@ ROJO = (255, 0, 0)
 NARANJA = (255, 192, 0)
 AMARILLO = (255, 255, 0)
 
-def actualizar_cuadro_texto(texto_coordenadas, ventana, AL,fuente):
-    texto = fuente.render(texto_coordenadas, True, NEGRO)
-    ventana.blit(texto, (20, AL - 50))
+def actualizar_cuadro_texto(texto, ventana, AL,fuente):
+    texto = fuente.render(texto, True, NEGRO)
+    ventana.blit(texto, (10, AL - 50))
 
 '''Con las siguientes 2 fucniones podemos calcular el tamaño de la pagina dependiendo del tamaño del laberinto'''
 def calcular_alto_ancho(cuadrado,separacion,proporcion,c_list):
@@ -82,7 +82,8 @@ def crear_laberinto(laberinto,direccion):
     return laberinto
 
 '''Con esta función imprimios el laberinto constantemente'''
-def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,separacion):
+def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,separacion,ancho_alto):
+    ANCHO, ALTO = ancho_alto
     ancho_cuadrado, alto_cuadrado = dim_cuadrado
     Sx, Sy = start
     Sx = calcular_posicion(Sx,ancho_cuadrado,separacion)
@@ -122,6 +123,12 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
                 _x = calcular_posicion(columna,ancho_cuadrado,separacion)
                 _y = calcular_posicion(fila,alto_cuadrado,separacion)
                 pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
+    if(x == 15)&(y == 2):
+        texto_coordenadas = "FELICIDADES!! ACABAS DE SALIR DE LA FRIENDZONE"
+    else:
+        texto_coordenadas = f"Coordenadas del mouse: Fila {y}, Columna {x}"
+    actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
+
     x = calcular_posicion(x,ancho_cuadrado,separacion)
     y = calcular_posicion(y,alto_cuadrado,separacion)
     # Dibujar la entrada (azul) en [14][3]
@@ -132,6 +139,7 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
 
     # Dibujar el punto amarillo en la posición actual
     pygame.draw.rect(screen, NARANJA, (x, y, ancho_cuadrado, alto_cuadrado))
+    
 
 '''Funcion para poder pintar los cuadros'''
 def pintar_cuadrado(laberinto, x, y,dim_cuadrado,separacion,c_list):

@@ -1,22 +1,5 @@
 from functions import *
 
-'''laberinto = [
-    [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],
-    [0,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
-    [0,1,0,1,0,0,1,0,1,0,0,0,0,0,0],
-    [0,0,1,1,1,1,1,0,1,0,0,0,0,0,0],
-    [0,0,0,1,0,1,0,0,1,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,0,1,0,0,0,0,0,0],
-    [0,1,1,1,1,1,1,0,1,0,0,0,0,0,0],
-    [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
-    [0,1,0,1,1,1,1,1,1,0,0,0,0,0,0],
-    [1,1,0,1,0,0,0,1,0,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,1,0,0,0,0,0,0,0]
-]'''
 laberinto = []
 direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/Repositorio/Laberinto/Practica 1/Laberintos/Laberinto1.txt"
 #direccion = ""
@@ -31,10 +14,11 @@ ancho_cuadrado = .6 # Ancho de los cuadrados
 alto_cuadrado = .4 # Alto de los cuadrados
 cuadrado = (ancho_cuadrado, alto_cuadrado)
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)# Tamaño de la separación
-proporcion = 50# Proporcion
+proporcion = 80# Proporcion
 
 # Dimensiones del laberinto (ancho y alto)
 ANCHO, ALTO = calcular_alto_ancho(cuadrado,separacion,proporcion, c_list)
+ancho_alto = ANCHO, ALTO
 
 ancho_cuadrado *= proporcion
 alto_cuadrado *= proporcion
@@ -58,9 +42,9 @@ End = (ex, ey)
 
 game_over = False
 ejecutando = True
-
+tam_letra = int(.38 * proporcion)
 # Cuadro de texto para mostrar las coordenadas
-fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 20)
+fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", tam_letra)
 texto_coordenadas = ""
 
 '''Aqui es donde podemos pintar el laberinto'''
@@ -104,26 +88,26 @@ while not game_over:
             pygame.quit() #Abortamos el pygame
             sys.exit() #Sliamos del programa
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+            if (event.key == pygame.K_LEFT)or(event.key == pygame.K_a):
                 if x-1 >= 0 and laberinto[y][x-1] == 1:
                     x-=1
-            elif event.key == pygame.K_RIGHT:
+            elif (event.key == pygame.K_RIGHT)or(event.key == pygame.K_d):
                 if x+1 <= 15 and laberinto[y][x+1] == 1:
                     x+=1
-            elif event.key == pygame.K_UP:
+            elif (event.key == pygame.K_UP)or(event.key == pygame.K_w):
                 if y-1 >= 0 and laberinto[y-1][x] == 1:
                     y-=1
-            elif event.key == pygame.K_DOWN:
+            elif (event.key == pygame.K_DOWN)or(event.key == pygame.K_s):
                 if y+1 <= 15 and laberinto[y+1][x] == 1:
                     y+=1
     
-    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado,separacion)
+    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado,separacion,ancho_alto)
     reloj.tick(60)
     pygame.display.flip()
 
     # Verificar si el cuadro amarillo llega al cuadro rojo
     if (x, y) == (ex, ey):
-        time.sleep(1)
+        time.sleep(2)
         game_over = True
 
 print("¡Laberinto resuelto!")
