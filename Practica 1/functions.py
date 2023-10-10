@@ -141,7 +141,7 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
     pygame.draw.rect(screen, ROJO, (Ex,Ey, ancho_cuadrado, alto_cuadrado))
 
     # Dibujar el punto amarillo en la posición actual
-    pygame.draw.rect(screen, NARANJA, (x, y, ancho_cuadrado, alto_cuadrado))
+    pygame.draw.rect(screen, NARANJA, (x+(separacion*5), y, ancho_cuadrado-(separacion*10), alto_cuadrado),border_radius=15)
     
 
 '''Funcion para poder pintar los cuadros'''
@@ -187,6 +187,7 @@ def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus):
         pantalla.blit(texto_opcion, text_rect)
 
 def empezar_juego(laberinto,datos,reloj):
+    game_over = False
     laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO = datos
     ex, ey = End 
     while True:
@@ -196,6 +197,10 @@ def empezar_juego(laberinto,datos,reloj):
                 pygame.quit() #Abortamos el pygame
                 sys.exit() #Sliamos del programa
             elif event.type == pygame.KEYDOWN:
+                if game_over == True:
+                    print("Saliendo")
+                    pygame.time.wait(2000)
+                    return 0
                 if (event.key == pygame.K_LEFT)or(event.key == pygame.K_a):
                     if x-1 >= 0 and laberinto[y][x-1] == 1:
                         x-=1
@@ -218,8 +223,7 @@ def empezar_juego(laberinto,datos,reloj):
 
             # Verificar si el cuadro amarillo llega al cuadro rojo
             if (x, y) == (ex, ey):
-                time.sleep(2)
-                return 0
+                game_over = True
             
 def editar_laberinto(datos,c_list):
     texto_coordenadas = ""
@@ -260,3 +264,7 @@ def editar_laberinto(datos,c_list):
 
         actualizar_cuadro_texto(texto_coordenadas,pantalla,ALTO,fuente)
         pygame.display.flip()
+
+def crear_lab_blanco(rows,columns):
+    laberinto_en_blanco = [[0 for i in range(0,columns)] for j in range(0,rows)]
+    return laberinto_en_blanco

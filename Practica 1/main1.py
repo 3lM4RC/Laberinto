@@ -83,22 +83,28 @@ while ejecutando:
 '''Aqui e donde el juego comienza'''
 while not game_over:
     screen.fill(FONDO)
+    print(laberinto)
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT: ##Si presionamos la X o quitamos el juego:
             pygame.quit() #Abortamos el pygame
             sys.exit() #Sliamos del programa
         elif event.type == pygame.KEYDOWN:
             if (event.key == pygame.K_LEFT)or(event.key == pygame.K_a):
-                if x-1 >= 0 and laberinto[y][x-1] == 1:
+                if x-1 >= 0 and laberinto[y][x-1] != 0:
+                    laberinto[y][x-1] = "V"
                     x-=1
             elif (event.key == pygame.K_RIGHT)or(event.key == pygame.K_d):
-                if x+1 <= 15 and laberinto[y][x+1] == 1:
+                if x+1 <= 15 and laberinto[y][x+1] != 0:
+                    laberinto[y][x+1] = "V"
                     x+=1
             elif (event.key == pygame.K_UP)or(event.key == pygame.K_w):
-                if y-1 >= 0 and laberinto[y-1][x] == 1:
+                if y-1 >= 0 and laberinto[y-1][x] != 0:
+                    laberinto[y-1][x] = "V"
                     y-=1
             elif (event.key == pygame.K_DOWN)or(event.key == pygame.K_s):
-                if y+1 <= 15 and laberinto[y+1][x] == 1:
+                if y+1 <= 15 and laberinto[y+1][x] != 0:
+                    laberinto[y+1][x] = "V"
                     y+=1
     
     dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)

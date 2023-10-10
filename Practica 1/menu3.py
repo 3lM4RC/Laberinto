@@ -6,6 +6,7 @@ NEGRO = (0, 0, 0)
 VERDE = (0, 255, 0)
 AZUL = (0, 255, 255)
 AMARILLO = (255, 255, 0)
+rows, columns = 15,15
 
 laberinto = []
 ancho_cuadrado = .6 # Ancho de los cuadrados
@@ -147,9 +148,10 @@ while ejecutando:
         laberinto = crear_laberinto([],"")
         c_list, ancho_alto = hacer_calculos(laberinto)
         estado_actual = ESTADO_JUEGO
-    
+
     elif estado_actual == ESTADO_CREAR_MAPA:
-        laberinto = crear_laberinto([],"")
+        laberinto_en_blanco = crear_lab_blanco(rows,columns)
+        laberinto = crear_laberinto(laberinto_en_blanco,"")
         c_list, ancho_alto = hacer_calculos(laberinto)
         datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
         estado_actual = editar_laberinto(datos,c_list)
