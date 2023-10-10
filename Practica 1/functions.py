@@ -85,10 +85,16 @@ def crear_laberinto(laberinto,direccion):
 def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,separacion,ALTO):
 #    ANCHO, ALTO = ancho_alto
     ancho_cuadrado, alto_cuadrado = dim_cuadrado
+    Ex, Ey = end
+    if(x == Ex)&(y == Ey):
+        texto_coordenadas = "FELICIDADES!! ACABAS DE SALIR DE LA FRIENDZONE!"
+    else:
+        texto_coordenadas = f"Fila {x}, Columna {y}"
+
     Sx, Sy = start
     Sx = calcular_posicion(Sx,ancho_cuadrado,separacion)
     Sy = calcular_posicion(Sy, alto_cuadrado,separacion)
-    Ex, Ey = end
+    
     Ex = calcular_posicion(Ex,ancho_cuadrado,separacion)
     Ey = calcular_posicion(Ey,alto_cuadrado,separacion)
     for fila in range(len(laberinto)):
@@ -123,10 +129,7 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
                 _x = calcular_posicion(columna,ancho_cuadrado,separacion)
                 _y = calcular_posicion(fila,alto_cuadrado,separacion)
                 pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
-    if(x == 15)&(y == 2):
-        texto_coordenadas = "FELICIDADES!! ACABAS DE SALIR DE LA FRIENDZONE!"
-    else:
-        texto_coordenadas = f": Fila {y}, Columna {x}"
+    
     actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
 
     x = calcular_posicion(x,ancho_cuadrado,separacion)
@@ -183,7 +186,7 @@ def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus):
         text_rect.center = cuadro_opcion.center
         pantalla.blit(texto_opcion, text_rect)
 
-def empezar_juego(pantalla,laberinto,datos,reloj,ESTADO_INICIO):
+def empezar_juego(laberinto,datos,reloj):
     laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO = datos
     ex, ey = End 
     while True:
@@ -207,7 +210,7 @@ def empezar_juego(pantalla,laberinto,datos,reloj,ESTADO_INICIO):
                         y+=1
                 elif event.key == pygame.K_ESCAPE:
                     print("saliendo del juego")
-                    return ESTADO_INICIO
+                    return 0
 
             dibujar_laberinto(laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
             reloj.tick(60)
@@ -216,4 +219,44 @@ def empezar_juego(pantalla,laberinto,datos,reloj,ESTADO_INICIO):
             # Verificar si el cuadro amarillo llega al cuadro rojo
             if (x, y) == (ex, ey):
                 time.sleep(2)
-                return ESTADO_INICIO
+                return 0
+            
+def editar_laberinto(datos,c_list):
+    texto_coordenadas = ""
+    laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO = datos
+    ancho_cuadrado, alto_cuadrado = dim_cuadrado
+    while True:
+        for event in pygame.event.get():
+            if (event.type == pygame.QUIT):
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Clic izquierdo (pintar gris)
+                    pintar_cuadrado(laberinto, *event.pos,dim_cuadrado,separacion,c_list)
+                elif event.button == 3:  # Clic derecho (restaurar a negro)
+                    restaurar_cuadrado(laberinto, *event.pos,dim_cuadrado,separacion,c_list)
+            elif (event.type == pygame.KEYDOWN):
+                if event.key == pygame.K_SPACE:
+                    return 2
+                elif event.key == pygame.K_ESCAPE:
+                    return 0
+
+        # Mostrar las coordenadas del mouse en la consola
+        _x, _y = pygame.mouse.get_pos()
+        fila = _y // int(alto_cuadrado + separacion)
+        columna = _x // int(ancho_cuadrado + separacion)
+        if 0 < fila < 16 and 0 < columna < 16:
+            texto_coordenadas = f"Coordenadas del mouse: Fila {fila}, Columna {columna}"
+
+        # Actualizar la screen
+        pantalla.fill(FONDO)
+        for fila in range(len(laberinto)):
+            for columna in range(len(laberinto[0])):
+                color = BLANCO if laberinto[fila][columna] else NEGRO
+                _x = calcular_posicion(columna, ancho_cuadrado,separacion)
+                _y = calcular_posicion(fila, alto_cuadrado,separacion)
+                pygame.draw.rect(pantalla, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
+
+
+        actualizar_cuadro_texto(texto_coordenadas,pantalla,ALTO,fuente)
+        pygame.display.flip()

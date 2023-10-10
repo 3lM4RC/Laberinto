@@ -12,7 +12,7 @@ ancho_cuadrado = .6 # Ancho de los cuadrados
 alto_cuadrado = .4 # Alto de los cuadrados
 cuadrado = (ancho_cuadrado, alto_cuadrado)
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)# Tamaño de la separación
-proporcion = 100# Proporcion
+proporcion = 80# Proporcion
 
 ancho_cuadrado *= proporcion
 alto_cuadrado *= proporcion
@@ -30,8 +30,7 @@ End = (ex, ey)
 
 game_over = False
 ejecutando = True
-tam_letra = int(.28 * proporcion)
-ancho_alto = 0,0
+tam_letra = int(.20 * proporcion)
 def hacer_calculos(laberinto):
     c_ancho = len(laberinto)
     c_largo = len(laberinto[0])+1
@@ -39,7 +38,9 @@ def hacer_calculos(laberinto):
 
     # Dimensiones del laberinto (ancho y alto)
     ANCHO, ALTO = calcular_alto_ancho(cuadrado,separacion,proporcion, c_list)
-    ancho_alto = ANCHO, ALTO
+    ancho_alto = (ANCHO, ALTO)
+
+    return c_list, ancho_alto
 
 
 
@@ -138,13 +139,20 @@ while ejecutando:
         if laberinto == []:
             direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/Repositorio/Laberinto/Practica 1/Laberintos/Laberinto1.txt"
             laberinto = crear_laberinto([],direccion)
+        c_list, ancho_alto = hacer_calculos(laberinto)
         datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
-        estado_actual = empezar_juego(pantalla, laberinto,datos,reloj,ESTADO_INICIO)
+        estado_actual = empezar_juego(laberinto,datos,reloj)
         
     elif estado_actual == ESTADO_MAPA:
         laberinto = crear_laberinto([],"")
-        hacer_calculos(laberinto)
+        c_list, ancho_alto = hacer_calculos(laberinto)
         estado_actual = ESTADO_JUEGO
+    
+    elif estado_actual == ESTADO_CREAR_MAPA:
+        laberinto = crear_laberinto([],"")
+        c_list, ancho_alto = hacer_calculos(laberinto)
+        datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
+        estado_actual = editar_laberinto(datos,c_list)
 
     elif estado_actual == ESTADO_SECRETO:
         # Lógica y dibujo del juego
@@ -154,9 +162,6 @@ while ejecutando:
         x = mouse_pos[0]
         y = mouse_pos[1]
         pygame.draw.rect(pantalla,VERDE,(x,y,100,100))
-    
-    #elif estado_actual == ESTADO_CREAR_MAPA:
-
 
     pygame.display.flip()
     reloj.tick(60)
