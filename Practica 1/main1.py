@@ -101,7 +101,7 @@ while not game_over:
                 if y+1 <= 15 and laberinto[y+1][x] == 1:
                     y+=1
     
-    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado,separacion,ancho_alto)
+    dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
     reloj.tick(60)
     pygame.display.flip()
 

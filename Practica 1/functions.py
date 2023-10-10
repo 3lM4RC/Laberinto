@@ -82,8 +82,8 @@ def crear_laberinto(laberinto,direccion):
     return laberinto
 
 '''Con esta función imprimios el laberinto constantemente'''
-def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,separacion,ancho_alto):
-    ANCHO, ALTO = ancho_alto
+def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,separacion,ALTO):
+#    ANCHO, ALTO = ancho_alto
     ancho_cuadrado, alto_cuadrado = dim_cuadrado
     Sx, Sy = start
     Sx = calcular_posicion(Sx,ancho_cuadrado,separacion)
@@ -124,9 +124,9 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
                 _y = calcular_posicion(fila,alto_cuadrado,separacion)
                 pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
     if(x == 15)&(y == 2):
-        texto_coordenadas = "FELICIDADES!! ACABAS DE SALIR DE LA FRIENDZONE"
+        texto_coordenadas = "FELICIDADES!! ACABAS DE SALIR DE LA FRIENDZONE!"
     else:
-        texto_coordenadas = f"Coordenadas del mouse: Fila {y}, Columna {x}"
+        texto_coordenadas = f": Fila {y}, Columna {x}"
     actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
 
     x = calcular_posicion(x,ancho_cuadrado,separacion)
@@ -182,3 +182,38 @@ def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus):
         text_rect = texto_opcion.get_rect()
         text_rect.center = cuadro_opcion.center
         pantalla.blit(texto_opcion, text_rect)
+
+def empezar_juego(pantalla,laberinto,datos,reloj,ESTADO_INICIO):
+    laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO = datos
+    ex, ey = End 
+    while True:
+        pantalla.fill(FONDO)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: ##Si presionamos la X o quitamos el juego:
+                pygame.quit() #Abortamos el pygame
+                sys.exit() #Sliamos del programa
+            elif event.type == pygame.KEYDOWN:
+                if (event.key == pygame.K_LEFT)or(event.key == pygame.K_a):
+                    if x-1 >= 0 and laberinto[y][x-1] == 1:
+                        x-=1
+                elif (event.key == pygame.K_RIGHT)or(event.key == pygame.K_d):
+                    if x+1 <= 15 and laberinto[y][x+1] == 1:
+                        x+=1
+                elif (event.key == pygame.K_UP)or(event.key == pygame.K_w):
+                    if y-1 >= 0 and laberinto[y-1][x] == 1:
+                        y-=1
+                elif (event.key == pygame.K_DOWN)or(event.key == pygame.K_s):
+                    if y+1 <= 15 and laberinto[y+1][x] == 1:
+                        y+=1
+                elif event.key == pygame.K_ESCAPE:
+                    print("saliendo del juego")
+                    return ESTADO_INICIO
+
+            dibujar_laberinto(laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
+            reloj.tick(60)
+            pygame.display.flip()
+
+            # Verificar si el cuadro amarillo llega al cuadro rojo
+            if (x, y) == (ex, ey):
+                time.sleep(2)
+                return ESTADO_INICIO

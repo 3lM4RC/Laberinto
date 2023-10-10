@@ -1,11 +1,4 @@
 from functions import *
-pygame.init()
-
-# Configuración de la pantalla
-ANCHO, ALTO = 800, 600
-pantalla = pygame.display.set_mode((ANCHO, ALTO))
-pygame.display.set_caption("Maze Runner")
-laberinto =[]
 
 # Colores
 BLANCO = (255, 255, 255)
@@ -14,8 +7,64 @@ VERDE = (0, 255, 0)
 AZUL = (0, 255, 255)
 AMARILLO = (255, 255, 0)
 
+laberinto = []
+ancho_cuadrado = .6 # Ancho de los cuadrados
+alto_cuadrado = .4 # Alto de los cuadrados
+cuadrado = (ancho_cuadrado, alto_cuadrado)
+separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)# Tamaño de la separación
+proporcion = 100# Proporcion
+
+ancho_cuadrado *= proporcion
+alto_cuadrado *= proporcion
+dim_cuadrado = (ancho_cuadrado, alto_cuadrado)
+
+# Coordenadas iniciales del jugador, y coordenadas finales
+x = 4
+y = 15
+ex = 15
+ey = 2
+
+#Tuplas para indicar el inicio y el final
+Start = (x, y)
+End = (ex, ey)
+
+game_over = False
+ejecutando = True
+tam_letra = int(.28 * proporcion)
+ancho_alto = 0,0
+def hacer_calculos(laberinto):
+    c_ancho = len(laberinto)
+    c_largo = len(laberinto[0])+1
+    c_list = (c_ancho, c_largo)
+
+    # Dimensiones del laberinto (ancho y alto)
+    ANCHO, ALTO = calcular_alto_ancho(cuadrado,separacion,proporcion, c_list)
+    ancho_alto = ANCHO, ALTO
+
+
+
+
+
+
+
+
+
+
+
+pygame.init()
+# Cuadro de texto para mostrar las coordenadas
+fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", tam_letra)
+
+# Configuración de la pantalla
+ANCHO, ALTO = 800, 600
+pantalla = pygame.display.set_mode((ANCHO, ALTO))
+pygame.display.set_caption("Maze Runner")
+
+
 # Fuente para el texto
 fuente_menus = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 20)
+
+game_over = False
 
 # Estados del juego
 ESTADO_INICIO = 0
@@ -25,7 +74,9 @@ ESTADO_MAPA = 3
 ESTADO_CREAR_MAPA = 4
 ESTADO_OPCIONES = 5
 ESTADO_SECRETO = 6
+ESTADOS = {ESTADO_INICIO:0,ESTADO_MENU:1,ESTADO_JUEGO:2,ESTADO_MAPA:3,ESTADO_CREAR_MAPA:4,ESTADO_OPCIONES:5,ESTADO_SECRETO:6}
 estado_actual = ESTADO_INICIO
+
 
 # Bucle principal
 reloj = pygame.time.Clock()
@@ -34,7 +85,7 @@ mostrar_mensaje = True
 tiempo_anterior = pygame.time.get_ticks()
 intervalo_parpadeo = 500  # Intervalo de parpadeo en milisegundos
 
-while True:
+while ejecutando:
     pantalla.fill(NEGRO)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -56,13 +107,17 @@ while True:
                         estado_actual = ESTADO_CREAR_MAPA
                     elif event.key == pygame.K_4:
                         print("Ver opciones")
-                        estado_actual = ESTADO_CREAR_MAPA
+                        estado_actual = ESTADO_OPCIONES
                     elif event.key == pygame.K_5:
+                        print("Saliendo del juego, nos vemos")
                         pygame.quit()
                         sys.exit()
-                    elif event.key == pygame.K_6:
+                    elif event.key == pygame.K_7:
                         print("Juego secreto")
                         estado_actual = ESTADO_SECRETO
+                    elif event.key == pygame.K_ESCAPE:
+                        print("regresando al inicio")
+                        estado_actual = ESTADO_INICIO
 
     # Lógica de parpadeo del mensaje
     
@@ -79,6 +134,18 @@ while True:
     elif estado_actual == ESTADO_MENU:
         imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus)
 
+    elif estado_actual == ESTADO_JUEGO:
+        if laberinto == []:
+            direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/Repositorio/Laberinto/Practica 1/Laberintos/Laberinto1.txt"
+            laberinto = crear_laberinto([],direccion)
+        datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
+        estado_actual = empezar_juego(pantalla, laberinto,datos,reloj,ESTADO_INICIO)
+        
+    elif estado_actual == ESTADO_MAPA:
+        laberinto = crear_laberinto([],"")
+        hacer_calculos(laberinto)
+        estado_actual = ESTADO_JUEGO
+
     elif estado_actual == ESTADO_SECRETO:
         # Lógica y dibujo del juego
         pygame.mouse.set_visible(0)
@@ -87,9 +154,7 @@ while True:
         x = mouse_pos[0]
         y = mouse_pos[1]
         pygame.draw.rect(pantalla,VERDE,(x,y,100,100))
-    elif estado_actual == ESTADO_MAPA:
-        laberinto = crear_laberinto(laberinto)
-        estado_actual = ESTADO_JUEGO
+    
     #elif estado_actual == ESTADO_CREAR_MAPA:
 
 
