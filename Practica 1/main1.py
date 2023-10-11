@@ -1,5 +1,6 @@
 from functions import *
 
+
 laberinto = []
 direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/Repositorio/Laberinto/Practica 1/Laberintos/Laberinto1.txt"
 #direccion = ""
@@ -42,7 +43,7 @@ End = (ex, ey)
 
 game_over = False
 ejecutando = True
-tam_letra = int(.38 * proporcion)
+tam_letra = int(.28 * proporcion)
 # Cuadro de texto para mostrar las coordenadas
 fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", tam_letra)
 texto_coordenadas = ""
@@ -80,6 +81,9 @@ while ejecutando:
     actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
     pygame.display.flip()
 
+Start, End = definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,Start,End,ALTO,fuente)
+x, y = Start
+ex, ey = End
 '''Aqui e donde el juego comienza'''
 while not game_over:
     screen.fill(FONDO)
@@ -91,21 +95,25 @@ while not game_over:
             sys.exit() #Sliamos del programa
         elif event.type == pygame.KEYDOWN:
             if (event.key == pygame.K_LEFT)or(event.key == pygame.K_a):
-                if x-1 >= 0 and laberinto[y][x-1] != 0:
-                    laberinto[y][x-1] = "V"
+                if x-1 > 0 and laberinto[y][x-1] != 0:
+                    laberinto[y][x] = "V"
                     x-=1
+                    laberinto[y][x] = "X"
             elif (event.key == pygame.K_RIGHT)or(event.key == pygame.K_d):
                 if x+1 <= 15 and laberinto[y][x+1] != 0:
-                    laberinto[y][x+1] = "V"
+                    laberinto[y][x] = "V"
                     x+=1
+                    laberinto[y][x] = "X"
             elif (event.key == pygame.K_UP)or(event.key == pygame.K_w):
-                if y-1 >= 0 and laberinto[y-1][x] != 0:
-                    laberinto[y-1][x] = "V"
+                if y-1 > 0 and laberinto[y-1][x] != 0:
+                    laberinto[y][x] = "V"
                     y-=1
+                    laberinto[y][x] = "X"
             elif (event.key == pygame.K_DOWN)or(event.key == pygame.K_s):
                 if y+1 <= 15 and laberinto[y+1][x] != 0:
-                    laberinto[y+1][x] = "V"
+                    laberinto[y][x] = "V"
                     y+=1
+                    laberinto[y][x] = "X"
     
     dibujar_laberinto(laberinto, screen, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
     reloj.tick(60)
@@ -113,7 +121,7 @@ while not game_over:
 
     # Verificar si el cuadro amarillo llega al cuadro rojo
     if (x, y) == (ex, ey):
-        time.sleep(2)
+        pygame.time.wait(2000)
         game_over = True
 
 print("¡Laberinto resuelto!")

@@ -12,12 +12,73 @@ BLANCO = (255, 255, 255)
 NEGRO = (0, 0, 0)
 GRIS = (128,128,128)
 GRIS_OX = (85, 85, 85)
+VERDE_NEON = (0,211,0)
 VERDE = (150,210,80)
 AZUL = (0, 175, 255)
+AZUL_OP = (0, 175, 188)
 CARNE = (250, 191, 143)
 ROJO = (255, 0, 0)
+ROJO_OP = (188, 0, 0)
 NARANJA = (255, 192, 0)
 AMARILLO = (255, 255, 0)
+MORADO = (42,0,53)
+
+def definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,inicio,final,ALTO,fuente):
+    ix, iy = inicio
+    ejecutando = True
+    c_ancho, c_largo = c_list
+    ancho, alto = dim_cuadrado
+    while ejecutando:
+        for event in pygame.event.get():
+            if (event.type == pygame.QUIT):
+                ejecutando = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Clic izquierdo (pintar gris)
+                    x,y = pygame.mouse.get_pos()
+                    fila = y // int(alto + separacion)
+                    columna = x // int(ancho + separacion)
+                    if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
+                        inicio = (columna,fila)
+                        laberinto[fila][columna] = "i"
+                        laberinto[iy][ix] = "1"
+                elif event.button == 3:  # Clic derecho (restaurar a negro)
+                    x,y = pygame.mouse.get_pos()
+                    fila = y // int(alto + separacion)
+                    columna = x // int(ancho + separacion)
+                    if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
+                        final = (columna,fila)
+                        laberinto[fila][columna] = "f"
+                        laberinto[iy][ix] = "1"
+            elif (event.type == pygame.KEYDOWN):
+                if event.key == pygame.K_SPACE:
+                    return inicio,final
+
+        # Mostrar las coordenadas del mouse en la consola
+        _x, _y = pygame.mouse.get_pos()
+        fila = _y // int(alto + separacion)
+        columna = _x // int(ancho + separacion)
+        if 0 < fila < c_largo+1 and 0 < columna < c_ancho:
+            texto_coordenadas = f"Coordenadas del mouse: Fila {fila}, Columna {columna}"
+        sx,sy = inicio
+        ex,ey = final
+        sx = calcular_posicion(sx,ancho,separacion)
+        sy = calcular_posicion(sy,alto,separacion)
+        ex = calcular_posicion(ex,ancho,separacion)
+        ey = calcular_posicion(ey,alto,separacion)
+        # Actualizar la screen
+        screen.fill(FONDO)
+        for fila in range(len(laberinto)):
+            for columna in range(len(laberinto[0])):
+    
+                color = BLANCO if laberinto[fila][columna] else NEGRO
+                _x = calcular_posicion(columna, ancho,separacion)
+                _y = calcular_posicion(fila, alto,separacion)
+                pygame.draw.rect(screen, color, (_x, _y, ancho, alto))
+                pygame.draw.rect(screen, ROJO_OP, (ex, ey, ancho, alto))
+                pygame.draw.rect(screen, AZUL_OP, (sx, sy, ancho, alto))
+
+        actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
+        pygame.display.flip()
 
 def actualizar_cuadro_texto(texto, ventana, AL,fuente):
     texto = fuente.render(texto, True, NEGRO)
@@ -89,7 +150,7 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
     if(x == Ex)&(y == Ey):
         texto_coordenadas = "FELICIDADES!! ACABAS DE SALIR DE LA FRIENDZONE!"
     else:
-        texto_coordenadas = f"Fila {x}, Columna {y}"
+        texto_coordenadas = f"Fila {laberinto[y][0]}, Columna {laberinto[0][x]}"
 
     Sx, Sy = start
     Sx = calcular_posicion(Sx,ancho_cuadrado,separacion)
@@ -126,9 +187,14 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
                     color = NARANJA
                 else: 
                     color = BLANCO
+
                 _x = calcular_posicion(columna,ancho_cuadrado,separacion)
                 _y = calcular_posicion(fila,alto_cuadrado,separacion)
                 pygame.draw.rect(screen, color, (_x, _y, ancho_cuadrado, alto_cuadrado))
+                if laberinto[fila][columna] == "V":
+                    _x += ancho_cuadrado/2 
+                    _y += alto_cuadrado/2
+                    pygame.draw.circle(screen,VERDE_NEON,(_x,_y),8)
     
     actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
 
@@ -141,8 +207,10 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
     pygame.draw.rect(screen, ROJO, (Ex,Ey, ancho_cuadrado, alto_cuadrado))
 
     # Dibujar el punto amarillo en la posición actual
-    pygame.draw.rect(screen, NARANJA, (x+(separacion*5), y, ancho_cuadrado-(separacion*10), alto_cuadrado),border_radius=15)
-    
+    #pygame.draw.rect(screen, NARANJA, (x+(separacion*5), y, ancho_cuadrado-(separacion*10), alto_cuadrado),border_radius=15)    
+    x += ancho_cuadrado/2 
+    y += alto_cuadrado/2
+    pygame.draw.circle(screen,NARANJA,(x,y),15)
 
 '''Funcion para poder pintar los cuadros'''
 def pintar_cuadrado(laberinto, x, y,dim_cuadrado,separacion,c_list):
@@ -169,10 +237,16 @@ def calcular_posicion(coord, tamaño,separacion):
     value = coord * (tamaño + separacion) + separacion
     return value
 
-def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus):
-    opciones = ["1. Comenzar juego", "2. Cargar un mapa", "3. Crear mapa nuevo", "4. Ver opciones", "5. Salir del juego"]
+def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus,estado):
     boton_alto = 80  # Altura de cada botón
     espacio_entre_botones = 10  # Espacio entre botones
+    if not estado:
+        opciones = ["1. Comenzar juego", "2. Cargar un mapa", "3. Crear mapa nuevo", "4. Ver opciones", "5. Salir del juego"]
+    if estado == 2:
+        opciones = ["1. Cargar un mapa", "2. Crear un mapa desde 0"]
+    if estado == 3:
+        opciones = ["1. Volver a jugar", "2. Guardar el mapa","3. Salir sin guardar el mapa"]
+    
     total_botones = len(opciones)
     alto_total_botones = total_botones * (boton_alto + espacio_entre_botones) - espacio_entre_botones
     y_inicial = (ALTO - alto_total_botones) // 2
@@ -180,16 +254,22 @@ def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus):
     for i, opcion in enumerate(opciones):
         texto_opcion = fuente_menus.render(opcion, True, BLANCO)
         cuadro_opcion = pygame.Rect((ANCHO-300) // 2, y_inicial + i * (boton_alto + espacio_entre_botones), 300, boton_alto)
-        pygame.draw.rect(pantalla, NEGRO, cuadro_opcion)
+        pygame.draw.rect(pantalla, MORADO, cuadro_opcion)
         pygame.draw.rect(pantalla, AMARILLO, cuadro_opcion, 5)  # Cuadro de opción
         text_rect = texto_opcion.get_rect()
         text_rect.center = cuadro_opcion.center
         pantalla.blit(texto_opcion, text_rect)
+    
 
-def empezar_juego(laberinto,datos,reloj):
+def empezar_juego(datos,reloj):
     game_over = False
     laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO = datos
-    ex, ey = End 
+    c_ancho = len(laberinto)
+    c_largo = len(laberinto[0])+1
+    c_list = (c_ancho, c_largo)
+    Start, End = definir_inicio_final(pantalla,laberinto, dim_cuadrado,separacion,c_list,Start,End,ALTO,fuente)
+    x, y = Start
+    ex, ey = End
     while True:
         pantalla.fill(FONDO)
         for event in pygame.event.get():
@@ -202,17 +282,25 @@ def empezar_juego(laberinto,datos,reloj):
                     pygame.time.wait(2000)
                     return 0
                 if (event.key == pygame.K_LEFT)or(event.key == pygame.K_a):
-                    if x-1 >= 0 and laberinto[y][x-1] == 1:
+                    if x-1 > 0 and laberinto[y][x-1] != 0:
+                        laberinto[y][x] = "V"
                         x-=1
+                        laberinto[y][x] = "X"
                 elif (event.key == pygame.K_RIGHT)or(event.key == pygame.K_d):
-                    if x+1 <= 15 and laberinto[y][x+1] == 1:
+                    if x+1 <= 15 and laberinto[y][x+1] != 0:
+                        laberinto[y][x] = "V"
                         x+=1
+                        laberinto[y][x] = "X"
                 elif (event.key == pygame.K_UP)or(event.key == pygame.K_w):
-                    if y-1 >= 0 and laberinto[y-1][x] == 1:
+                    if y-1 > 0 and laberinto[y-1][x] != 0:
+                        laberinto[y][x] = "V"
                         y-=1
+                        laberinto[y][x] = "X"
                 elif (event.key == pygame.K_DOWN)or(event.key == pygame.K_s):
-                    if y+1 <= 15 and laberinto[y+1][x] == 1:
+                    if y+1 <= 15 and laberinto[y+1][x] != 0:
+                        laberinto[y][x] = "V"
                         y+=1
+                        laberinto[y][x] = "X"
                 elif event.key == pygame.K_ESCAPE:
                     print("saliendo del juego")
                     return 0
@@ -268,3 +356,20 @@ def editar_laberinto(datos,c_list):
 def crear_lab_blanco(rows,columns):
     laberinto_en_blanco = [[0 for i in range(0,columns)] for j in range(0,rows)]
     return laberinto_en_blanco
+
+def analizar_decision(laberinto, posicion):
+    decision = 0
+    x, y = posicion
+    if laberinto[y][x+1] != 0:
+        decision+=1
+    if laberinto[y][x-1] != 0:
+        decision+=1
+    if laberinto[y+1][x] != 0:
+        decision+=1
+    if laberinto[y-1][x] != 0:
+        decision+=1
+
+    if decision >2:
+        return 1
+    else:
+        return 0
