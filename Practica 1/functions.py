@@ -1,6 +1,6 @@
 import pygame
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, Entry, Button, Label
 import sys
 import ast
 import string
@@ -10,9 +10,11 @@ import time
 FONDO = (173, 173, 173)
 BLANCO = (255, 255, 255)
 NEGRO = (0, 0, 0)
+GRIS_CL = (160,160,160)
 GRIS = (128,128,128)
 GRIS_OX = (85, 85, 85)
 VERDE_NEON = (0,211,0)
+VERDE_OP = (0,100,0)
 VERDE = (150,210,80)
 AZUL = (0, 175, 255)
 AZUL_OP = (0, 175, 188)
@@ -41,21 +43,23 @@ def definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,inicio
                     fila = y // int(alto + separacion)
                     columna = x // int(ancho + separacion)
                     if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
-                        if laberinto[fila][columna] == 1:
+                        if laberinto[fila][columna] != 0:
                             ix, iy = inicio
+                            estado_inicial = laberinto[fila][columna]
                             inicio = (columna,fila)
                             laberinto[fila][columna] = "i"
-                            laberinto[iy][ix] = 1
+                            laberinto[iy][ix] = estado_inicial
                 elif event.button == 3:  # Clic derecho (hacer el final)
                     x,y = pygame.mouse.get_pos()
                     fila = y // int(alto + separacion)
                     columna = x // int(ancho + separacion)
                     if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
-                        if laberinto[fila][columna] == 1:
+                        if laberinto[fila][columna] != 0:
                             fx, fy = final
+                            estado_inicial = laberinto[fila][columna]
                             final = (columna,fila)
                             laberinto[fila][columna] = "f"
-                            laberinto[fy][fx] = 1
+                            laberinto[fy][fx] = estado_inicial
             elif (event.type == pygame.KEYDOWN):
                 if event.key == pygame.K_SPACE:
                     return inicio,final
@@ -199,6 +203,8 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
                     color = AZUL
                 elif laberinto[fila][columna] == 5:
                     color = NARANJA
+                elif laberinto[fila][columna] == 6:
+                    color = GRIS
                 else: 
                     color = BLANCO
 
@@ -272,11 +278,11 @@ def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus,estado):
     if not estado:
         opciones = ["1. Comenzar juego", "2. Cargar un mapa", "3. Crear mapa nuevo", "4. Ver opciones", "5. Salir del juego"]
     if estado == 2:
-        opciones = ["1. Cargar un mapa", "2. Crear un mapa desde 0"]
+        opciones = ["1. Cargar un mapa", "2. Crear un mapa desde 0","esc. Para volver al menu"]
     if estado == 3:
-        opciones = ["1. Volver a jugar", "2. Guardar el mapa","3. Salir sin guardar el mapa"]
+        opciones = ["1. Volver a jugar", "2. Guardar el mapa","3. Salir sin guardar el mapa","esc. para salir del juego"]
     if estado == 4:
-        opciones = ["1. Volver a jugar", "2. Volver al menu", "3. Volver al inicio"]
+        opciones = ["1. Volver a jugar", "2. Volver al menu", "3. Volver al inicio", "esc. Para salir del juego"]
     
     total_botones = len(opciones)
     alto_total_botones = total_botones * (boton_alto + espacio_entre_botones) - espacio_entre_botones
@@ -431,7 +437,7 @@ def hacer_calculos(laberinto,datos):
     return c_list, ancho_alto
 
 
-def preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa):
+def preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa,laberinto):
     ANCHO, ALTO = MEDIDAS
     pantalla.fill(NEGRO)
     while True:
@@ -463,13 +469,13 @@ def preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_ma
                             '''
                                 codigo para guardar el mapa
                             '''
+                            preguntar_nombre_para_guardar(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa,laberinto)
                         elif event.key == pygame.K_3:
                             print("regresando al inicio")
                             return 0
                         elif event.key == pygame.K_ESCAPE:
-                            print("Saliendo del juego, nos vemos")
-                            pygame.quit()
-                            sys.exit()
+                            print("regresando al menu")
+                            return 1
                 else:
                     if(event.type == pygame.KEYDOWN):
                         if event.key == pygame.K_1:
@@ -521,3 +527,55 @@ def descubrir_malla(malla_oculta,x,y):
                 malla_oculta[y + 1][x - 1] = 1
             if x < columnas - 1:
                 malla_oculta[y + 1][x + 1] = 1
+
+
+def guardar_nuevo_mapa(entry_nombre,entry_ubicacion,label_resultado,matriz):
+
+    nombre_archivo = entry_nombre.get() + ".txt"
+    ubicacion = entry_ubicacion.get()
+    ruta_completa = ubicacion + nombre_archivo
+
+    # Abrir el archivo en modo escritura
+    with open(ruta_completa, "w") as archivo:
+        matriz_como_cadena = str(matriz)
+        archivo.write(matriz_como_cadena)
+
+    label_resultado.config(text=f"La matriz se ha guardado en el archivo '{ruta_completa}'.")
+
+def preguntar_nombre_para_guardar(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa,laberinto):
+    # Matriz de ejemplo (reemplázala por tu propia matriz)
+    matriz = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ]
+
+    # Crear la ventana de la aplicación
+    ventana = tk.Tk()
+    ventana.title("Guardar Matriz en Archivo")
+
+    # Etiqueta para el nombre del archivo
+    label_nombre = Label(ventana, text="Nombre del archivo:")
+    label_nombre.pack()
+
+    # Campo de entrada para el nombre del archivo
+    entry_nombre = Entry(ventana)
+    entry_nombre.pack()
+
+    # Etiqueta para la ubicación del archivo
+    label_ubicacion = Label(ventana, text="Ubicación del archivo:")
+    label_ubicacion.pack()
+
+    # Campo de entrada para la ubicación del archivo
+    entry_ubicacion = Entry(ventana)
+    entry_ubicacion.pack()
+
+    # Etiqueta para mostrar el resultado
+    label_resultado = Label(ventana, text="")
+    label_resultado.pack()
+
+    # Botón para guardar la matriz
+    boton_guardar = Button(ventana, text="Guardar Laberinto", command=guardar_nuevo_mapa(entry_nombre,entry_ubicacion,label_resultado,matriz))
+    boton_guardar.pack()
+
+    ventana.mainloop()

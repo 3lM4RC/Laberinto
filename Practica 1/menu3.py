@@ -13,6 +13,8 @@ ancho_cuadrado = .6 # Ancho de los cuadrados
 alto_cuadrado = .4 # Alto de los cuadrados
 cuadrado = (ancho_cuadrado, alto_cuadrado)
 separacion = (ancho_cuadrado * 10 - alto_cuadrado * 10)# Tamaño de la separación
+if not separacion:
+    separacion = 2
 proporcion = 80# Proporcion
 
 ancho_cuadrado *= proporcion
@@ -145,7 +147,7 @@ while ejecutando:
             menu_estado = 3
         else:
             menu_estado = 4
-        estado_actual = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa)
+        estado_actual = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa,laberinto)
         
     elif estado_actual == ESTADO_MAPA:
         laberinto = crear_laberinto([],"")
@@ -155,7 +157,7 @@ while ejecutando:
     elif estado_actual == ESTADO_CREAR_MAPA:
         crear_mapa = 1
         menu_estado = 2
-        laberinto = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa)
+        laberinto = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa,laberinto)
         datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
         c_list, ancho_alto = hacer_calculos(laberinto,datos_n)
         estado_actual = editar_laberinto(datos,c_list)
