@@ -25,7 +25,9 @@ MORADO = (42,0,53)
 TRANSPARENTE = (255, 0, 255, 128)
 
 def definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,inicio,final,ALTO,fuente):
+    texto_coordenadas = ""
     ix, iy = inicio
+    fx, fy = final
     ejecutando = True
     c_ancho, c_largo = c_list
     ancho, alto = dim_cuadrado
@@ -34,22 +36,26 @@ def definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,inicio
             if (event.type == pygame.QUIT):
                 ejecutando = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Clic izquierdo (pintar gris)
+                if event.button == 1:  # Clic izquierdo (hacer el inicio)
                     x,y = pygame.mouse.get_pos()
                     fila = y // int(alto + separacion)
                     columna = x // int(ancho + separacion)
                     if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
-                        inicio = (columna,fila)
-                        laberinto[fila][columna] = "i"
-                        laberinto[iy][ix] = "0"
-                elif event.button == 3:  # Clic derecho (restaurar a negro)
+                        if laberinto[fila][columna] == 1:
+                            ix, iy = inicio
+                            inicio = (columna,fila)
+                            laberinto[fila][columna] = "i"
+                            laberinto[iy][ix] = 1
+                elif event.button == 3:  # Clic derecho (hacer el final)
                     x,y = pygame.mouse.get_pos()
                     fila = y // int(alto + separacion)
                     columna = x // int(ancho + separacion)
                     if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
-                        final = (columna,fila)
-                        laberinto[fila][columna] = "f"
-                        laberinto[iy][ix] = "0"
+                        if laberinto[fila][columna] == 1:
+                            fx, fy = final
+                            final = (columna,fila)
+                            laberinto[fila][columna] = "f"
+                            laberinto[fy][fx] = 1
             elif (event.type == pygame.KEYDOWN):
                 if event.key == pygame.K_SPACE:
                     return inicio,final
@@ -59,7 +65,7 @@ def definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,inicio
         fila = _y // int(alto + separacion)
         columna = _x // int(ancho + separacion)
         if 0 < fila < c_largo+1 and 0 < columna < c_ancho:
-            texto_coordenadas = f"Coordenadas del mouse: Fila {fila}, Columna {columna}"
+            texto_coordenadas = f"Coordenadas del mouse: Fila {fila}, Columna {columna}" + "        click izquierdo: incio      click derecho: final"
         sx,sy = inicio
         ex,ey = final
         sx = calcular_posicion(sx,ancho,separacion)
@@ -116,10 +122,11 @@ def pedir_laberinto(file_path):
         try:
             matrix = ast.literal_eval(text)
             # Ahora, 'matrix' contiene la malla_oculta bidimensional de Python
-            print("malla_oculta cargada correctamente en la variable 'matrix'.")
+            print("matriz cargada correctamente en la variable 'matrix'.")
+            print(matrix)
             return matrix
         except Exception as e:
-            print(f"Error al cargar la malla_oculta: {str(e)}")
+            print(f"Error al cargar la matriz: {str(e)}")
     else:
         print("No se seleccionó ningún archivo TXT.")
 
@@ -152,6 +159,9 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
     ancho_cuadrado, alto_cuadrado = dim_cuadrado
     Ex, Ey = end
     if(x == Ex)&(y == Ey):
+        for fila in range(len(malla_oculta)):
+            for columna in range(len(malla_oculta[0])):
+                malla_oculta[fila][columna] = 1
         texto_coordenadas = "FELICIDADES!! ACABAS DE SALIR DE LA FRIENDZONE!"
     else:
         texto_coordenadas = f"Fila {laberinto[y][0]}, Columna {laberinto[0][x]}"
@@ -225,11 +235,11 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
         for columna in range(len(malla_oculta[0])):
             if fila != 0 and columna != 0:
                 color = TRANSPARENTE if malla_oculta[fila][columna] else NEGRO
-                Bx = calcular_posicion(columna, ancho_cuadrado,2)
-                By = calcular_posicion(fila, alto_cuadrado,2)
+                Bx = calcular_posicion(columna, ancho_cuadrado+separacion,0)
+                By = calcular_posicion(fila, alto_cuadrado+separacion,0)
                 if color == NEGRO:
-                    pygame.draw.rect(screen, color, (Bx, By, ancho_cuadrado, alto_cuadrado))
-    pygame.draw.circle(screen,NARANJA,(x,y),15)
+                    pygame.draw.rect(screen, color, (Bx, By, ancho_cuadrado+separacion, alto_cuadrado+separacion))
+    pygame.draw.circle(screen,NARANJA,(x,y),18)
 
 '''Funcion para poder pintar los cuadros'''
 def pintar_cuadrado(laberinto, x, y,dim_cuadrado,separacion,c_list):
@@ -265,6 +275,8 @@ def imprimir_menu(ALTO,ANCHO,pantalla,fuente_menus,estado):
         opciones = ["1. Cargar un mapa", "2. Crear un mapa desde 0"]
     if estado == 3:
         opciones = ["1. Volver a jugar", "2. Guardar el mapa","3. Salir sin guardar el mapa"]
+    if estado == 4:
+        opciones = ["1. Volver a jugar", "2. Volver al menu", "3. Volver al inicio"]
     
     total_botones = len(opciones)
     alto_total_botones = total_botones * (boton_alto + espacio_entre_botones) - espacio_entre_botones
@@ -419,7 +431,7 @@ def hacer_calculos(laberinto,datos):
     return c_list, ancho_alto
 
 
-def preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado):
+def preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa):
     ANCHO, ALTO = MEDIDAS
     pantalla.fill(NEGRO)
     while True:
@@ -440,23 +452,40 @@ def preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado):
                     elif event.key == pygame.K_ESCAPE:
                         print("regresando al inicio")
                         return 0
-            if (menu_estado == 3):
-                if(event.type == pygame.KEYDOWN):
-                    if event.key == pygame.K_1:
-                        print("Comenzar el juego")
-                        return 2
-                    elif event.key == pygame.K_2:
-                        print("Guardando el mapa")
-                        '''
-                            codigo para guardar el mapa
-                        '''
-                    elif event.key == pygame.K_3:
-                        print("regresando al inicio")
-                        return 0
-                    elif event.key == pygame.K_ESCAPE:
-                        print("Saliendo del juego, nos vemos")
-                        pygame.quit()
-                        sys.exit()
+            if (menu_estado == 3)or(menu_estado == 4):
+                if(crear_mapa == 1):
+                    if(event.type == pygame.KEYDOWN):
+                        if event.key == pygame.K_1:
+                            print("Comenzar el juego")
+                            return 2
+                        elif event.key == pygame.K_2:
+                            print("Guardando el mapa")
+                            '''
+                                codigo para guardar el mapa
+                            '''
+                        elif event.key == pygame.K_3:
+                            print("regresando al inicio")
+                            return 0
+                        elif event.key == pygame.K_ESCAPE:
+                            print("Saliendo del juego, nos vemos")
+                            pygame.quit()
+                            sys.exit()
+                else:
+                    if(event.type == pygame.KEYDOWN):
+                        if event.key == pygame.K_1:
+                            print("Comenzar el juego de nuevo")
+                            return 2
+                        elif event.key == pygame.K_2:
+                            print("Volver al menu")
+                            return 1
+                        elif event.key == pygame.K_3:
+                            print("regresando al inicio")
+                            return 0
+                        elif event.key == pygame.K_ESCAPE:
+                            print("Saliendo del juego, nos vemos")
+                            pygame.quit()
+                            sys.exit()
+
         pygame.display.flip()
 
 def descubrir_malla(malla_oculta,x,y):

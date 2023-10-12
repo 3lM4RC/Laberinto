@@ -29,6 +29,7 @@ ey = 2
 Start = (x, y)
 End = (ex, ey)
 
+crear_mapa = 0
 menu_estado = 0
 c_list = 0
 ancho_alto = 0,0
@@ -140,8 +141,11 @@ while ejecutando:
         c_list, ancho_alto = hacer_calculos(laberinto,datos_n)
         datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
         estado_actual = empezar_juego(datos,reloj)
-        menu_estado = 3
-        estado_actual = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado)
+        if crear_mapa == 1:
+            menu_estado = 3
+        else:
+            menu_estado = 4
+        estado_actual = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa)
         
     elif estado_actual == ESTADO_MAPA:
         laberinto = crear_laberinto([],"")
@@ -149,8 +153,9 @@ while ejecutando:
         estado_actual = ESTADO_JUEGO
 
     elif estado_actual == ESTADO_CREAR_MAPA:
+        crear_mapa = 1
         menu_estado = 2
-        laberinto = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado)
+        laberinto = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado,crear_mapa)
         datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
         c_list, ancho_alto = hacer_calculos(laberinto,datos_n)
         estado_actual = editar_laberinto(datos,c_list)
