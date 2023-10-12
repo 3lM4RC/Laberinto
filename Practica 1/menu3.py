@@ -6,7 +6,7 @@ NEGRO = (0, 0, 0)
 VERDE = (0, 255, 0)
 AZUL = (0, 255, 255)
 AMARILLO = (255, 255, 0)
-rows, columns = 15,15
+#rows, columns = 15,15
 
 laberinto = []
 ancho_cuadrado = .6 # Ancho de los cuadrados
@@ -29,7 +29,6 @@ ey = 2
 Start = (x, y)
 End = (ex, ey)
 
-crear_mapa = 0
 menu_estado = 0
 c_list = 0
 ancho_alto = 0,0
@@ -38,22 +37,7 @@ ancho_alto = 0,0
 game_over = False
 ejecutando = True
 tam_letra = int(.20 * proporcion)
-def hacer_calculos(laberinto):
-    c_ancho = len(laberinto)
-    c_largo = len(laberinto[0])+1
-    c_list = (c_ancho, c_largo)
-
-    # Dimensiones del laberinto (ancho y alto)
-    ANCHO, ALTO = calcular_alto_ancho(cuadrado,separacion,proporcion, c_list)
-    ancho_alto = (ANCHO, ALTO)
-
-    return c_list, ancho_alto
-
-
-
-
-
-
+datos_n = (cuadrado,separacion,proporcion)
 
 
 
@@ -65,6 +49,7 @@ fuente = pygame.font.Font("C:/Windows/Fonts/arial.ttf", tam_letra)
 
 # Configuración de la pantalla
 ANCHO, ALTO = 800, 600
+MEDIDAS = ANCHO, ALTO
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("Maze Runner")
 
@@ -102,12 +87,10 @@ while ejecutando:
             sys.exit()
         elif (event.type == pygame.KEYDOWN)or(event.type == pygame.MOUSEBUTTONDOWN):
             if estado_actual == ESTADO_INICIO:
-                crear_mapa = 0
-                menu_estado = 0
-                laberinto = []
                 estado_actual = ESTADO_MENU
             elif estado_actual == ESTADO_MENU:
-                if(event.type == pygame.KEYDOWN)and(menu_estado == 0):
+                laberinto = []
+                if(event.type == pygame.KEYDOWN):
                     if event.key == pygame.K_1:
                         print("Comenzar el juego")
                         estado_actual = ESTADO_JUEGO
@@ -127,34 +110,6 @@ while ejecutando:
                     elif event.key == pygame.K_7:
                         print("Juego secreto")
                         estado_actual = ESTADO_SECRETO
-                    elif event.key == pygame.K_ESCAPE:
-                        print("regresando al inicio")
-                        estado_actual = ESTADO_INICIO
-                if(event.type == pygame.KEYDOWN)and(menu_estado == 2):
-                    if event.key == pygame.K_1:
-                        print("Cargando mapa")
-                        crear_mapa = 1
-                        estado_actual = ESTADO_MAPA
-                    elif event.key == pygame.K_2:
-                        print("Crear mapa desde cero")
-                        crear_mapa = 2
-                        estado_actual = ESTADO_CREAR_MAPA
-                    elif event.key == pygame.K_ESCAPE:
-                        print("regresando al inicio")
-                        estado_actual = ESTADO_INICIO
-                if(event.type == pygame.KEYDOWN)and(menu_estado == 3):
-                    if event.key == pygame.K_1:
-                        print("Comenzar el juego")
-                        estado_actual = ESTADO_JUEGO
-                    elif event.key == pygame.K_2:
-                        print("Guardando el mapa")
-                        '''
-                            codigo para guardar el mapa
-                        '''
-                    elif event.key == pygame.K_3:
-                        print("Saliendo del juego, nos vemos")
-                        pygame.quit()
-                        sys.exit()
                     elif event.key == pygame.K_ESCAPE:
                         print("regresando al inicio")
                         estado_actual = ESTADO_INICIO
@@ -181,27 +136,23 @@ while ejecutando:
         if laberinto == []:
             direccion = "C:/Users/marca/Documents/Séptimo Semestre/Inteligencia Artificial/Repositorio/Laberinto/Practica 1/Laberintos/Laberinto1.txt"
             laberinto = crear_laberinto([],direccion)
-        c_list, ancho_alto = hacer_calculos(laberinto)
+        c_list, ancho_alto = hacer_calculos(laberinto,datos_n)
         datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
         estado_actual = empezar_juego(datos,reloj)
+        menu_estado = 3
+        estado_actual = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado)
         
     elif estado_actual == ESTADO_MAPA:
         laberinto = crear_laberinto([],"")
-        c_list, ancho_alto = hacer_calculos(laberinto)
-        if crear_mapa == 0:
-            estado_actual = ESTADO_JUEGO
-        elif crear_mapa == 1:
-            estado_actual = ESTADO_CREAR_MAPA
+        c_list, ancho_alto = hacer_calculos(laberinto,datos_n)        
+        estado_actual = ESTADO_JUEGO
 
     elif estado_actual == ESTADO_CREAR_MAPA:
-        imprimir_menu(ALTO,ANCHO, pantalla, fuente_menus,2)
         menu_estado = 2
-        if crear_mapa == 2:
-            laberinto_en_blanco = crear_lab_blanco(rows,columns)
-            laberinto = crear_laberinto(laberinto_en_blanco,"")
-            c_list, ancho_alto = hacer_calculos(laberinto)
-            datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
-            estado_actual = editar_laberinto(datos,c_list)
+        laberinto = preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado)
+        datos = (laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
+        c_list, ancho_alto = hacer_calculos(laberinto,datos_n)
+        estado_actual = editar_laberinto(datos,c_list)
 
     elif estado_actual == ESTADO_SECRETO:
         # Lógica y dibujo del juego

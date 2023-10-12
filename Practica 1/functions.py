@@ -40,7 +40,7 @@ def definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,inicio
                     if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
                         inicio = (columna,fila)
                         laberinto[fila][columna] = "i"
-                        laberinto[iy][ix] = "1"
+                        laberinto[iy][ix] = "0"
                 elif event.button == 3:  # Clic derecho (restaurar a negro)
                     x,y = pygame.mouse.get_pos()
                     fila = y // int(alto + separacion)
@@ -48,7 +48,7 @@ def definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,inicio
                     if (0 < fila < c_largo+1) and (0 < columna < c_ancho):
                         final = (columna,fila)
                         laberinto[fila][columna] = "f"
-                        laberinto[iy][ix] = "1"
+                        laberinto[iy][ix] = "0"
             elif (event.type == pygame.KEYDOWN):
                 if event.key == pygame.K_SPACE:
                     return inicio,final
@@ -195,6 +195,11 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
                     _x += ancho_cuadrado/2 
                     _y += alto_cuadrado/2
                     pygame.draw.circle(screen,VERDE_NEON,(_x,_y),8)
+                if laberinto[fila][columna] == "O":
+                    _x += ancho_cuadrado/2 
+                    _y += alto_cuadrado/2
+                    pygame.draw.circle(screen,VERDE_NEON,(_x,_y),8)
+                    pygame.draw.circle(screen,ROJO,(_x,_y),12,5)
     
     actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
 
@@ -279,26 +284,38 @@ def empezar_juego(datos,reloj):
             elif event.type == pygame.KEYDOWN:
                 if game_over == True:
                     print("Saliendo")
-                    pygame.time.wait(2000)
-                    return 0
+                    #pygame.time.wait(2000)
+                    return 1
                 if (event.key == pygame.K_LEFT)or(event.key == pygame.K_a):
                     if x-1 > 0 and laberinto[y][x-1] != 0:
-                        laberinto[y][x] = "V"
+                        if analizar_decision(laberinto,x,y,c_list) == 1:
+                            laberinto[y][x] = "O"
+                        else:
+                            laberinto[y][x] = "V"
                         x-=1
                         laberinto[y][x] = "X"
                 elif (event.key == pygame.K_RIGHT)or(event.key == pygame.K_d):
                     if x+1 <= 15 and laberinto[y][x+1] != 0:
-                        laberinto[y][x] = "V"
+                        if analizar_decision(laberinto,x,y,c_list) == 1:
+                            laberinto[y][x] = "O"
+                        else:
+                            laberinto[y][x] = "V"
                         x+=1
                         laberinto[y][x] = "X"
                 elif (event.key == pygame.K_UP)or(event.key == pygame.K_w):
                     if y-1 > 0 and laberinto[y-1][x] != 0:
-                        laberinto[y][x] = "V"
+                        if analizar_decision(laberinto,x,y,c_list) == 1:
+                            laberinto[y][x] = "O"
+                        else:
+                            laberinto[y][x] = "V"
                         y-=1
                         laberinto[y][x] = "X"
                 elif (event.key == pygame.K_DOWN)or(event.key == pygame.K_s):
                     if y+1 <= 15 and laberinto[y+1][x] != 0:
-                        laberinto[y][x] = "V"
+                        if analizar_decision(laberinto,x,y,c_list) == 1:
+                            laberinto[y][x] = "O"
+                        else:
+                            laberinto[y][x] = "V"
                         y+=1
                         laberinto[y][x] = "X"
                 elif event.key == pygame.K_ESCAPE:
@@ -357,19 +374,73 @@ def crear_lab_blanco(rows,columns):
     laberinto_en_blanco = [[0 for i in range(0,columns)] for j in range(0,rows)]
     return laberinto_en_blanco
 
-def analizar_decision(laberinto, posicion):
+def analizar_decision(laberinto,x,y,c_list):
+    c_ancho, c_largo = c_list
+    print(c_ancho)
     decision = 0
-    x, y = posicion
-    if laberinto[y][x+1] != 0:
-        decision+=1
-    if laberinto[y][x-1] != 0:
-        decision+=1
-    if laberinto[y+1][x] != 0:
-        decision+=1
-    if laberinto[y-1][x] != 0:
-        decision+=1
-
+    if (x < c_ancho-1)and(y < c_largo-2):
+        if laberinto[y][x+1] != 0:
+            decision+=1
+        if laberinto[y][x-1] != 0:
+            decision+=1
+        if laberinto[y+1][x] != 0:
+            decision+=1
+        if laberinto[y-1][x] != 0:
+            decision+=1
     if decision >2:
         return 1
     else:
         return 0
+    
+def hacer_calculos(laberinto,datos):
+    cuadrado,separacion,proporcion = datos
+    c_ancho = len(laberinto)
+    c_largo = len(laberinto[0])+1
+    c_list = (c_ancho, c_largo)
+
+    # Dimensiones del laberinto (ancho y alto)
+    ANCHO, ALTO = calcular_alto_ancho(cuadrado,separacion,proporcion, c_list)
+    ancho_alto = (ANCHO, ALTO)
+
+    return c_list, ancho_alto
+
+
+def preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado):
+    ANCHO, ALTO = MEDIDAS
+    pantalla.fill(NEGRO)
+    while True:
+        imprimir_menu(ALTO,ANCHO, pantalla, fuente_menus,menu_estado)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if (menu_estado == 2):
+                if(event.type == pygame.KEYDOWN):
+                    if event.key == pygame.K_1:
+                        print("Cargando mapa")
+                        return crear_laberinto([],"")
+                    elif event.key == pygame.K_2:
+                        print("Crear mapa desde cero")
+                        laberinto_en_blanco = crear_lab_blanco(15,15)
+                        return crear_laberinto(laberinto_en_blanco,"")
+                    elif event.key == pygame.K_ESCAPE:
+                        print("regresando al inicio")
+                        return 0
+            if (menu_estado == 3):
+                if(event.type == pygame.KEYDOWN):
+                    if event.key == pygame.K_1:
+                        print("Comenzar el juego")
+                        return 2
+                    elif event.key == pygame.K_2:
+                        print("Guardando el mapa")
+                        '''
+                            codigo para guardar el mapa
+                        '''
+                    elif event.key == pygame.K_3:
+                        print("regresando al inicio")
+                        return 0
+                    elif event.key == pygame.K_ESCAPE:
+                        print("Saliendo del juego, nos vemos")
+                        pygame.quit()
+                        sys.exit()
+        pygame.display.flip()
