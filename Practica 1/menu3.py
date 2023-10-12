@@ -88,6 +88,7 @@ while ejecutando:
         elif (event.type == pygame.KEYDOWN)or(event.type == pygame.MOUSEBUTTONDOWN):
             if estado_actual == ESTADO_INICIO:
                 estado_actual = ESTADO_MENU
+                laberinto = []
             elif estado_actual == ESTADO_MENU:
                 laberinto = []
                 if(event.type == pygame.KEYDOWN):

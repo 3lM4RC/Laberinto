@@ -22,6 +22,7 @@ ROJO_OP = (188, 0, 0)
 NARANJA = (255, 192, 0)
 AMARILLO = (255, 255, 0)
 MORADO = (42,0,53)
+TRANSPARENTE = (255, 0, 255, 128)
 
 def definir_inicio_final(screen,laberinto, dim_cuadrado,separacion,c_list,inicio,final,ALTO,fuente):
     ix, iy = inicio
@@ -114,11 +115,11 @@ def pedir_laberinto(file_path):
         # Convertir el texto en una lista anidada de Python utilizando ast.literal_eval
         try:
             matrix = ast.literal_eval(text)
-            # Ahora, 'matrix' contiene la matriz bidimensional de Python
-            print("Matriz cargada correctamente en la variable 'matrix'.")
+            # Ahora, 'matrix' contiene la malla_oculta bidimensional de Python
+            print("malla_oculta cargada correctamente en la variable 'matrix'.")
             return matrix
         except Exception as e:
-            print(f"Error al cargar la matriz: {str(e)}")
+            print(f"Error al cargar la malla_oculta: {str(e)}")
     else:
         print("No se seleccionó ningún archivo TXT.")
 
@@ -143,7 +144,10 @@ def crear_laberinto(laberinto,direccion):
     return laberinto
 
 '''Con esta función imprimios el laberinto constantemente'''
-def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,separacion,ALTO):
+def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,separacion,ALTO,malla_oculta):
+    c_ancho = len(laberinto)
+    c_largo = len(laberinto[0])
+    
 #    ANCHO, ALTO = ancho_alto
     ancho_cuadrado, alto_cuadrado = dim_cuadrado
     Ex, Ey = end
@@ -158,8 +162,8 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
     
     Ex = calcular_posicion(Ex,ancho_cuadrado,separacion)
     Ey = calcular_posicion(Ey,alto_cuadrado,separacion)
-    for fila in range(len(laberinto)):
-        for columna in range(len(laberinto[0])):
+    for fila in range(c_ancho):
+        for columna in range(c_largo):
             if (fila == 0) | (columna == 0):
 
                 #pygame.draw.rect(screen, GRIS, (columna * 40, fila * 40, 40, 40))  
@@ -200,9 +204,10 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
                     _y += alto_cuadrado/2
                     pygame.draw.circle(screen,VERDE_NEON,(_x,_y),8)
                     pygame.draw.circle(screen,ROJO,(_x,_y),12,5)
-    
+
     actualizar_cuadro_texto(texto_coordenadas,screen,ALTO,fuente)
 
+    descubrir_malla(malla_oculta,x,y)
     x = calcular_posicion(x,ancho_cuadrado,separacion)
     y = calcular_posicion(y,alto_cuadrado,separacion)
     # Dibujar la entrada (azul) en [14][3]
@@ -215,6 +220,15 @@ def dibujar_laberinto(laberinto,screen, start, end, x, y,fuente,dim_cuadrado,sep
     #pygame.draw.rect(screen, NARANJA, (x+(separacion*5), y, ancho_cuadrado-(separacion*10), alto_cuadrado),border_radius=15)    
     x += ancho_cuadrado/2 
     y += alto_cuadrado/2
+
+    for fila in range(len(malla_oculta)):
+        for columna in range(len(malla_oculta[0])):
+            if fila != 0 and columna != 0:
+                color = TRANSPARENTE if malla_oculta[fila][columna] else NEGRO
+                Bx = calcular_posicion(columna, ancho_cuadrado,2)
+                By = calcular_posicion(fila, alto_cuadrado,2)
+                if color == NEGRO:
+                    pygame.draw.rect(screen, color, (Bx, By, ancho_cuadrado, alto_cuadrado))
     pygame.draw.circle(screen,NARANJA,(x,y),15)
 
 '''Funcion para poder pintar los cuadros'''
@@ -272,6 +286,7 @@ def empezar_juego(datos,reloj):
     c_ancho = len(laberinto)
     c_largo = len(laberinto[0])+1
     c_list = (c_ancho, c_largo)
+    malla_oculta = crear_lab_blanco(c_ancho,c_largo)
     Start, End = definir_inicio_final(pantalla,laberinto, dim_cuadrado,separacion,c_list,Start,End,ALTO,fuente)
     x, y = Start
     ex, ey = End
@@ -322,7 +337,7 @@ def empezar_juego(datos,reloj):
                     print("saliendo del juego")
                     return 0
 
-            dibujar_laberinto(laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO)
+            dibujar_laberinto(laberinto, pantalla, Start, End, x, y,fuente,dim_cuadrado,separacion,ALTO,malla_oculta)
             reloj.tick(60)
             pygame.display.flip()
 
@@ -376,7 +391,6 @@ def crear_lab_blanco(rows,columns):
 
 def analizar_decision(laberinto,x,y,c_list):
     c_ancho, c_largo = c_list
-    print(c_ancho)
     decision = 0
     if (x < c_ancho-1)and(y < c_largo-2):
         if laberinto[y][x+1] != 0:
@@ -444,3 +458,37 @@ def preguntar_para_crear_mapa(pantalla,MEDIDAS,fuente_menus,menu_estado):
                         pygame.quit()
                         sys.exit()
         pygame.display.flip()
+
+def descubrir_malla(malla_oculta,x,y):
+    
+    filas = len(malla_oculta)
+    columnas = len(malla_oculta[0])
+# Coordenadas (x, y) en las que deseas establecer unos
+
+    # Establecer unos en los extremos de la malla_oculta en función de las coordenadas (x, y)
+    if 0 <= x < columnas and 0 <= y < filas:
+        malla_oculta[y][x] = 1
+        if x > 0:
+            malla_oculta[y][x - 1] = 1
+        if x < columnas - 1:
+            malla_oculta[y][x + 1] = 1
+        if y > 0:
+            malla_oculta[y - 1][x] = 1
+        if y < filas - 1:
+            malla_oculta[y + 1][x] = 1
+
+        # Extremos superiores
+        if y > 0:
+            malla_oculta[y - 1][x] = 1
+            if x > 0:
+                malla_oculta[y - 1][x - 1] = 1
+            if x < columnas - 1:
+                malla_oculta[y - 1][x + 1] = 1
+
+        # Extremos inferiores
+        if y < filas - 1:
+            malla_oculta[y + 1][x] = 1
+            if x > 0:
+                malla_oculta[y + 1][x - 1] = 1
+            if x < columnas - 1:
+                malla_oculta[y + 1][x + 1] = 1
